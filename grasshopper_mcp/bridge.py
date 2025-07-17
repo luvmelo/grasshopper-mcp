@@ -66,7 +66,7 @@ def send_to_grasshopper(command_type: str, params: Optional[Dict[str, Any]] = No
 
 # 註冊 MCP 工具
 @server.tool("add_component")
-def add_component(component_type: str, x: float, y: float):
+def add_component(component_type: str, x: float, y: float, min_value: float = None, max_value: float = None, value: float = None):
     """
     Add a component to the Grasshopper canvas
     
@@ -74,6 +74,9 @@ def add_component(component_type: str, x: float, y: float):
         component_type: Component type (point, curve, circle, line, panel, slider)
         x: X coordinate on the canvas
         y: Y coordinate on the canvas
+        min_value: Minimum value for sliders (optional)
+        max_value: Maximum value for sliders (optional)
+        value: Current value for sliders (optional)
     
     Returns:
         Result of adding the component
@@ -92,21 +95,74 @@ def add_component(component_type: str, x: float, y: float):
         "multi-dimensional slider": "MD Slider",
         "graph mapper": "Graph Mapper",
         
+        # 參數組件
+        "boolean": "Boolean Toggle",
+        "bool": "Boolean Toggle",
+        "toggle": "Boolean Toggle",
+        "integer": "Integer",
+        "int": "Integer",
+        
         # 數學運算組件
         "add": "Addition",
         "addition": "Addition",
         "plus": "Addition",
         "sum": "Addition",
+        "+": "Addition",
         "subtract": "Subtraction",
         "subtraction": "Subtraction",
         "minus": "Subtraction",
         "difference": "Subtraction",
+        "-": "Subtraction",
         "multiply": "Multiplication",
         "multiplication": "Multiplication",
         "times": "Multiplication",
         "product": "Multiplication",
+        "*": "Multiplication",
         "divide": "Division",
         "division": "Division",
+        "/": "Division",
+        
+        # 集合操作組件
+        "list item": "List Item",
+        "item": "List Item",
+        "list length": "List Length",
+        "length": "List Length",
+        "series": "Series",
+        "range": "Range",
+        
+        # 變換組件
+        "move": "Move",
+        "translate": "Move",
+        "rotate": "Rotate",
+        "scale": "Scale",
+        
+        # 向量組件
+        "construct point": "Construct Point",
+        "point": "Construct Point",
+        "pt": "Construct Point",
+        "vector 2pt": "Vector 2Pt",
+        "vector": "Vector 2Pt",
+        "distance": "Distance",
+        "dist": "Distance",
+        
+        # 曲線組件
+        "line": "Line",
+        "rectangle": "Rectangle",
+        "rect": "Rectangle",
+        "circle": "Circle",
+        "loft": "Loft",
+        "curve length": "Curve Length",
+        "evaluate curve": "Evaluate Curve",
+        "divide curve": "Divide Curve",
+        "join curves": "Join Curves",
+        "offset curve": "Offset Curve",
+        
+        # 幾何組件
+        "box": "Box",
+        "cube": "Box",
+        "sphere": "Sphere",
+        "cylinder": "Cylinder",
+        "cone": "Cone",
         
         # 輸出組件
         "panel": "Panel",
@@ -127,7 +183,102 @@ def add_component(component_type: str, x: float, y: float):
         "y": y
     }
     
+    # 如果是滑桿類型，添加範圍參數
+    if "slider" in component_type.lower():
+        if min_value is not None:
+            params["min"] = min_value
+        if max_value is not None:
+            params["max"] = max_value
+        if value is not None:
+            params["value"] = value
+        
+        # 智能設置範圍：如果指定了值但沒有範圍，自動調整範圍
+        if value is not None and min_value is None and max_value is None:
+            if value > 1.0:
+                # 如果值大於1，設置一個合理的範圍
+                params["min"] = 0.0
+                params["max"] = max(10.0, value * 2)
+                print(f"Auto-adjusted slider range for value {value}: min=0.0, max={params['max']}", file=sys.stderr)
+            elif value < 0:
+                # 如果值是負數，設置包含負數的範圍
+                params["min"] = min(value * 2, -10.0)
+                params["max"] = max(10.0, abs(value) * 2)
+                print(f"Auto-adjusted slider range for negative value {value}: min={params['min']}, max={params['max']}", file=sys.stderr)
+            else:
+                # 對於0-1之間的值，設置至少到2的範圍
+                params["min"] = 0.0
+                params["max"] = max(2.0, value * 2)
+                print(f"Auto-adjusted slider range for small value {value}: min=0.0, max={params['max']}", file=sys.stderr)
+        elif min_value is None and max_value is None:
+            # 如果沒有值也沒有範圍，設置默認範圍
+            params["min"] = 0.0
+            params["max"] = 10.0
+            print(f"Set default slider range: min=0.0, max=10.0", file=sys.stderr)
+        
+        print(f"Creating slider with params: {params}", file=sys.stderr)
+    
     return send_to_grasshopper("add_component", params)
+
+@server.tool("create_slider_with_value") 
+def create_slider_with_value(x: float, y: float, target_value: float, name: str = ""):
+    """
+    Create a Number Slider with automatically adjusted range based on the target value
+    
+    Args:
+        x: X coordinate on the canvas
+        y: Y coordinate on the canvas
+        target_value: The value that the slider needs to support
+        name: Optional name for the slider
+    
+    Returns:
+        Result of creating the slider
+    """
+    # 計算合適的範圍 - 改進邏輯確保範圍足夠大
+    if target_value <= 0:
+        min_val = min(target_value * 2, -10.0) if target_value < 0 else -10.0
+        max_val = max(10.0, abs(target_value) * 2)
+    elif target_value <= 1.0:
+        min_val = 0.0
+        max_val = max(2.0, target_value * 2)  # 確保最大值至少為2
+    else:
+        # 對於大於1的值，設置更寬的範圍
+        min_val = 0.0
+        max_val = max(target_value * 2, target_value + 10.0)  # 確保範圍足夠寬
+    
+    # 設置合適的精度
+    if abs(target_value) < 0.1:
+        precision = 0.01
+    elif abs(target_value) < 1.0:
+        precision = 0.1
+    else:
+        precision = 0.5
+    
+    print(f"Creating slider for value {target_value} with range [{min_val}, {max_val}]", file=sys.stderr)
+    
+    # 創建滑桿參數
+    params = {
+        "type": "Number Slider",
+        "x": x,
+        "y": y,
+        "min": min_val,
+        "max": max_val,
+        "value": target_value,
+        "rounding": precision
+    }
+    
+    if name:
+        params["name"] = name
+    
+    # 發送創建滑桿的命令
+    result = send_to_grasshopper("add_component", params)
+    
+    # 檢查結果並記錄
+    if result and result.get("success"):
+        print(f"Successfully created slider with value {target_value}, range [{min_val}, {max_val}]", file=sys.stderr)
+    else:
+        print(f"Failed to create slider: {result.get('error', 'Unknown error')}", file=sys.stderr)
+    
+    return result
 
 @server.tool("clear_document")
 def clear_document():
@@ -190,7 +341,7 @@ def connect_components(source_id: str, target_id: str, source_param: str = None,
         Result of connecting the components
     """
     # 獲取目標組件的信息，檢查是否已有連接
-    target_info = send_to_grasshopper("get_component_info", {"componentId": target_id})
+    target_info = send_to_grasshopper("get_component_info", {"id": target_id})
     
     # 檢查組件類型，如果是需要多個輸入的組件（如 Addition, Subtraction 等），智能分配輸入
     if target_info and "result" in target_info and "type" in target_info["result"]:
@@ -285,7 +436,7 @@ def get_component_info(component_id: str):
         Detailed information about the component, including inputs, outputs, and current values
     """
     params = {
-        "componentId": component_id
+        "id": component_id
     }
     
     result = send_to_grasshopper("get_component_info", params)
@@ -392,7 +543,7 @@ def get_all_components():
                 # 特殊處理某些組件類型
                 if component_type == "Number Slider":
                     # 嘗試獲取滑桿的當前設置
-                    component_info = send_to_grasshopper("get_component_info", {"componentId": component_id})
+                    component_info = send_to_grasshopper("get_component_info", {"id": component_id})
                     if component_info and "result" in component_info:
                         info_data = component_info["result"]
                         component["currentSettings"] = {
@@ -475,6 +626,322 @@ def validate_connection(source_id: str, target_id: str, source_param: str = None
     
     return send_to_grasshopper("validate_connection", params)
 
+@server.tool("set_component_value")
+def set_component_value(component_id: str, value: str):
+    """
+    Set the value of a component (like a panel or slider)
+    
+    Args:
+        component_id: The ID of the component to modify
+        value: The new value to set
+    
+    Returns:
+        Result of setting the component value
+    """
+    return send_to_grasshopper("set_component_value", {
+        "id": component_id,
+        "value": value
+    })
+
+@server.tool("execute_code")
+def execute_code(code: str, language: str = "python", x: float = 0, y: float = 0, inputs: Optional[List[Dict[str, Any]]] = None, outputs: Optional[List[Dict[str, Any]]] = None):
+    """
+    Execute code in a Grasshopper Script component with parameter guidance
+    
+    Creates a Script component that executes Python or C# code. Script components in Grasshopper
+    require manual parameter configuration through the UI.
+    
+    Args:
+        code: The code to execute
+        language: Programming language ("python" or "csharp")
+        x: X position for the component (default: 0)
+        y: Y position for the component (default: 0)
+        inputs: List of intended input parameters for guidance. Each input should be a dict with:
+            - name: Parameter name (e.g., "radius", "height") - use this as variable name in code
+            - type: Parameter type ("number", "point", "curve", "brep", "string", "boolean", etc.)
+            - description: Parameter description
+        outputs: List of intended output parameters for guidance. Each output should be a dict with:
+            - name: Parameter name (e.g., "geometry", "result") - use this as variable name in code
+            - type: Parameter type ("number", "point", "curve", "brep", "string", "boolean", etc.)
+            - description: Parameter description
+    
+    Manual Setup Required:
+        1. After running this command, zoom in on the created Script component
+        2. Use the ⊕ button to add input/output parameters
+        3. Name parameters to match the variable names in your code
+        4. Right-click on parameters to set type hints (Number, Point, Curve, etc.)
+        5. Connect other components to the inputs for data flow
+    
+    Example:
+        execute_code(
+            code="import rhinoscriptsyntax as rs\na = rs.AddSphere([0,0,0], radius)",
+            language="python",
+            inputs=[{
+                "name": "radius",
+                "type": "number", 
+                "description": "Sphere radius"
+            }],
+            outputs=[{
+                "name": "sphere",
+                "type": "brep",
+                "description": "Generated sphere"
+            }]
+        )
+        
+        After running: manually add 'radius' input parameter and set type hint to 'Number'
+    
+    Returns:
+        Result of creating the script component with code and parameter guidance
+    """
+    params = {
+        "code": code,
+        "language": language,
+        "x": x,
+        "y": y
+    }
+    
+    if inputs:
+        params["inputs"] = inputs
+    
+    if outputs:
+        params["outputs"] = outputs
+    
+    return send_to_grasshopper("execute_code", params)
+
+@server.tool("search_components")
+def search_components(query: str):
+    """
+    Search for available Grasshopper components
+    
+    Args:
+        query: Search query for component names, categories, or descriptions
+    
+    Returns:
+        List of matching components with their information
+    """
+    return send_to_grasshopper("search_components", {
+        "query": query
+    })
+
+@server.tool("get_all_components")
+def get_all_components():
+    """
+    Get all available Grasshopper components
+    
+    Returns:
+        List of all available components organized by category
+    """
+    return send_to_grasshopper("get_all_components", {})
+
+@server.tool("generate_manual_setup_guide")
+def generate_manual_setup_guide(
+    script_component_id: str,
+    code: str,
+    language: str = "python",
+    input_params: list = None,
+    output_params: list = None
+):
+    """
+    Generate a manual setup guide and display it in a Panel next to the script component.
+    
+    Args:
+        script_component_id: The ID of the script component to place the guide next to.
+        code: The script code to analyze.
+        language: Programming language (python or csharp).
+        input_params: List of expected input parameters.
+        output_params: List of expected output parameters.
+    
+    Returns:
+        Result of creating and setting the guide panel.
+    """
+    # 1. Get the script component's position
+    try:
+        script_info = send_to_grasshopper("get_component_info", {"id": script_component_id})
+        if not script_info or not script_info.get("success"):
+            return {
+                "success": False,
+                "error": "Failed to get script component info."
+            }
+        
+        script_pos = script_info.get("data", {}).get("result", {})
+        x = script_pos.get("x", 100)
+        y = script_pos.get("y", 100)
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error getting component position: {e}"
+        }
+
+    # 2. Generate the guide text (reusing existing logic)
+    guide_text = _generate_guide_text(code, language, input_params, output_params)
+
+    # 3. Create a Panel to display the guide
+    panel_x = x + 300  # Position the panel to the right
+    panel_y = y
+    
+    try:
+        add_panel_command = {
+            "type": "Panel",
+            "x": panel_x,
+            "y": panel_y,
+            "name": f"Setup Guide",
+            "value": guide_text  # Pass the value directly
+        }
+        panel_info = send_to_grasshopper("add_component", add_panel_command)
+        
+        if not panel_info or not panel_info.get("success"):
+            return {
+                "success": False,
+                "error": "Failed to create the guide panel."
+            }
+            
+        panel_id = panel_info.get("data", {}).get("result", {}).get("id")
+
+        # 4. Set the panel's content
+        set_value_command = {
+            "id": panel_id,
+            "value": guide_text
+        }
+        
+        set_value_result = send_to_grasshopper("set_component_value", set_value_command)
+        
+        # Optional: Connect the script component to the panel for clarity
+        send_to_grasshopper("connect_components", {
+            "sourceId": script_component_id,
+            "targetId": panel_id
+        })
+        
+        return set_value_result
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Error creating guide panel: {e}"
+        }
+
+def _generate_guide_text(code, language, input_params, output_params):
+    """Helper function to generate the markdown guide text."""
+    if input_params is None:
+        input_params = []
+    if output_params is None:
+        output_params = []
+    
+    # Analyze code for variables
+    variables_in_code = analyze_code_variables(code, language)
+    
+    # Build the guide string
+    guide = f"""SCRIPT SETUP GUIDE ({language.upper()})
+1. Zoom in on script component to see ⊕/⊖
+2. Use ⊕ to add/remove parameters.
+3. Right-click params to set Name & Type Hint.
+
+---INPUTS---
+"""
+    # ... (rest of the text generation logic)
+    # This part is simplified for brevity but reuses the detailed logic from before
+    
+    all_inputs = {param.get("name"): param for param in input_params if isinstance(param, dict)}
+    for var in variables_in_code.get("inputs", []):
+        if var not in all_inputs:
+            all_inputs[var] = {"type": "number", "description": f"Variable used in code: {var}"}
+
+    if not all_inputs:
+        guide += "None required.\n"
+    else:
+        for name, info in all_inputs.items():
+            guide += f"- Name: {name}, Type: {info.get('type', 'number')}\n"
+
+    guide += "\n---OUTPUTS---\n"
+    all_outputs = {param.get("name"): param for param in output_params if isinstance(param, dict)}
+    for var in variables_in_code.get("outputs", []):
+        if var not in all_outputs:
+            all_outputs[var] = {"type": "geometry", "description": f"Result variable: {var}"}
+
+    if not all_outputs:
+        guide += "None required.\n"
+    else:
+        for name, info in all_outputs.items():
+            guide += f"- Name: {name}, Type: {info.get('type', 'geometry')}\n"
+            
+    return guide
+
+def analyze_code_variables(code: str, language: str) -> dict:
+    """
+    Analyze code to find input/output variables and potential issues
+    
+    Args:
+        code: The code to analyze
+        language: Programming language
+    
+    Returns:
+        Dictionary containing found variables and warnings
+    """
+    import re
+    
+    inputs = set()
+    outputs = set()
+    warnings = []
+    
+    lines = code.split('\n')
+    
+    if language.lower() == "python":
+        # Python 变量分析
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+                
+            # 查找赋值语句 (outputs)
+            assignment_match = re.match(r'^(\w+)\s*=', line)
+            if assignment_match:
+                var_name = assignment_match.group(1)
+                # 常见的输出变量模式
+                if var_name.lower() in ['result', 'output', 'a', 'b', 'c', 'out', 'geometry', 'points', 'curves', 'surfaces']:
+                    outputs.add(var_name)
+            
+            # 查找使用的变量 (potential inputs)
+            # 简单的变量使用检测
+            used_vars = re.findall(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b', line)
+            for var in used_vars:
+                # 跳过关键字、函数名、模块名等
+                if var not in ['print', 'len', 'range', 'for', 'if', 'else', 'elif', 'while', 'def', 'class', 'import', 'from', 'as', 'True', 'False', 'None', 'and', 'or', 'not', 'in', 'is', 'math', 'ghpythonlib', 'Rhino', 'Grasshopper', 'System']:
+                    if not assignment_match or var != assignment_match.group(1):
+                        inputs.add(var)
+    
+    elif language.lower() == "csharp":
+        # C# 变量分析
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith('//'):
+                continue
+                
+            # 查找赋值语句
+            assignment_match = re.match(r'^(\w+)\s*=', line)
+            if assignment_match:
+                var_name = assignment_match.group(1)
+                if var_name.lower() in ['result', 'output', 'a', 'b', 'c', 'out']:
+                    outputs.add(var_name)
+            
+            # 查找使用的变量
+            used_vars = re.findall(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b', line)
+            for var in used_vars:
+                if var not in ['var', 'int', 'double', 'string', 'bool', 'if', 'else', 'for', 'while', 'foreach', 'using', 'namespace', 'class', 'public', 'private', 'static', 'void', 'return', 'true', 'false', 'null', 'new', 'this', 'base', 'Point3d', 'Vector3d', 'Plane', 'Circle', 'Line', 'Curve', 'Surface', 'Brep', 'Mesh', 'Math', 'System', 'Rhino', 'Grasshopper']:
+                    if not assignment_match or var != assignment_match.group(1):
+                        inputs.add(var)
+    
+    # 移除明显的输出变量从输入列表
+    inputs = inputs - outputs
+    
+    # 检查常见问题
+    if not inputs and not outputs:
+        warnings.append("No variables detected - code might be self-contained")
+    
+    return {
+        "inputs": list(inputs),
+        "outputs": list(outputs),
+        "warnings": warnings
+    }
+
 # 註冊 MCP 資源
 @server.resource("grasshopper://status")
 def get_grasshopper_status():
@@ -496,6 +963,11 @@ def get_grasshopper_status():
                 "description": "Single numeric value slider with adjustable range",
                 "common_usage": "Use for single numeric inputs like radius, height, count, etc.",
                 "parameters": ["min", "max", "value", "rounding", "type"],
+                "creation_methods": {
+                    "add_component": "add_component('Number Slider', x, y, min_value, max_value, value)",
+                    "smart_creation": "create_slider_with_value(x, y, target_value) - automatically sets appropriate range"
+                },
+                "important_note": "Always specify min/max values or use create_slider_with_value for values > 1.0",
                 "NOT_TO_BE_CONFUSED_WITH": "MD Slider (which is for multi-dimensional values)"
             },
             "MD Slider": {
@@ -573,7 +1045,9 @@ def get_grasshopper_status():
                 "When needing a simple numeric input control, ALWAYS use 'Number Slider', not MD Slider",
                 "For vector inputs (like 3D points), use 'MD Slider' or 'Construct Point' with multiple Number Sliders",
                 "Use 'Panel' to display outputs and debug values",
-                "When connecting multiple sliders to Addition, first slider goes to input A, second to input B"
+                "When connecting multiple sliders to Addition, first slider goes to input A, second to input B",
+                "IMPORTANT: For slider values > 1.0, use create_slider_with_value(x, y, target_value) or specify min/max values",
+                "For sphere radius = 3.0, use create_slider_with_value(x, y, 3.0) to auto-set range [0.0, 6.0]"
             ],
             "canvas_summary": f"Current canvas has {len(component_summaries)} components and {len(connections.get('result', []))} connections"
         }

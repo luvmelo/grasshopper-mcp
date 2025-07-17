@@ -80,7 +80,7 @@ namespace GrasshopperMCP.Commands
                 throw exception;
             }
             
-            return result;
+            return new { result };
         }
         
         /// <summary>
@@ -163,10 +163,10 @@ namespace GrasshopperMCP.Commands
             // 如果有異常，拋出
             if (exception != null)
             {
-                throw exception;
+                return Response.CreateError(exception.Message);
             }
-            
-            return result;
+
+            return Response.Ok(new { result });
         }
         
         /// <summary>

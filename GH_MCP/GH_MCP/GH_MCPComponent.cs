@@ -25,11 +25,13 @@ namespace GrasshopperMCP
         private static int grasshopperPort = 8080;
         
         /// <summary>
-        /// 初始化 GrasshopperMCPComponent 類的新實例
+        /// 組件構造函數
         /// </summary>
         public GrasshopperMCPComponent()
-            : base("Grasshopper MCP", "MCP", "Machine Control Protocol for Grasshopper", "Params", "Util")
+            : base("GH_MCP", "MCP", "Grasshopper MCP Bridge", "MCP", "Communication")
         {
+            // 初始化命令註冊表
+            GrasshopperCommandRegistry.Initialize();
         }
         
         /// <summary>
@@ -111,8 +113,8 @@ namespace GrasshopperMCP
         {
             if (isRunning) return;
             
-            // 初始化命令註冊表
-            GrasshopperCommandRegistry.Initialize();
+            // 初始化命令註冊表（靜態構造函數會自動調用）
+            // GrasshopperCommandRegistry.Initialize() 不再需要
             
             // 啟動 TCP 監聽器
             isRunning = true;

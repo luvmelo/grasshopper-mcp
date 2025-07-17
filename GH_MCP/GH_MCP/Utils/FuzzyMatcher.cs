@@ -46,7 +46,61 @@ namespace GH_MCP.Utils
             { "line", "Line" },
             { "ln", "Line" },
             { "curve", "Curve" },
-            { "crv", "Curve" }
+            { "crv", "Curve" },
+            { "boolean", "Boolean Toggle" },
+            { "bool", "Boolean Toggle" },
+            { "toggle", "Boolean Toggle" },
+            { "integer", "Integer" },
+            { "int", "Integer" },
+            
+            // 數學元件
+            { "add", "Addition" },
+            { "addition", "Addition" },
+            { "+", "Addition" },
+            { "subtract", "Subtraction" },
+            { "subtraction", "Subtraction" },
+            { "-", "Subtraction" },
+            { "multiply", "Multiplication" },
+            { "multiplication", "Multiplication" },
+            { "*", "Multiplication" },
+            { "divide", "Division" },
+            { "division", "Division" },
+            { "/", "Division" },
+            
+            // 列表元件
+            { "listitem", "List Item" },
+            { "item", "List Item" },
+            { "listlength", "List Length" },
+            { "length", "List Length" },
+            { "series", "Series" },
+            { "range", "Range" },
+            
+            // 變換元件
+            { "move", "Move" },
+            { "translate", "Move" },
+            { "rotate", "Rotate" },
+            { "scale", "Scale" },
+            
+            // 向量元件
+            { "constructpoint", "Construct Point" },
+            { "ptxyz", "Construct Point" },
+            { "vector2pt", "Vector 2Pt" },
+            { "vec2pt", "Vector 2Pt" },
+            { "distance", "Distance" },
+            { "dist", "Distance" },
+            
+            // 曲線元件
+            { "loft", "Loft" },
+            { "curvelength", "Curve Length" },
+            { "length", "Curve Length" },
+            { "evaluatecurve", "Evaluate Curve" },
+            { "evalcrv", "Evaluate Curve" },
+            { "dividecurve", "Divide Curve" },
+            { "divcrv", "Divide Curve" },
+            { "joincurves", "Join Curves" },
+            { "join", "Join Curves" },
+            { "offsetcurve", "Offset Curve" },
+            { "offset", "Offset Curve" }
         };
         
         // 參數名稱映射字典，將常用的簡化參數名稱映射到實際的 Grasshopper 參數名稱
@@ -88,7 +142,39 @@ namespace GH_MCP.Utils
             { "output", "Output" },
             { "geometry", "Geometry" },
             { "geo", "Geometry" },
-            { "brep", "Brep" }
+            { "brep", "Brep" },
+            
+            // 數學參數
+            { "a", "A" },
+            { "b", "B" },
+            { "first", "A" },
+            { "second", "B" },
+            
+            // 列表參數
+            { "list", "List" },
+            { "index", "Index" },
+            { "idx", "Index" },
+            { "i", "Index" },
+            { "wrap", "Wrap" },
+            { "count", "Count" },
+            { "steps", "Steps" },
+            { "step", "Step" },
+            
+            // 變換參數
+            { "motion", "Motion" },
+            { "vector", "Motion" },
+            { "vec", "Motion" },
+            { "angle", "Angle" },
+            { "factor", "Factor" },
+            
+            // 曲線參數
+            { "curves", "Curves" },
+            { "crvs", "Curves" },
+            { "parameter", "Parameter" },
+            { "param", "Parameter" },
+            { "t", "Parameter" },
+            { "distance", "Distance" },
+            { "dist", "Distance" }
         };
         
         /// <summary>
@@ -161,6 +247,31 @@ namespace GH_MCP.Utils
                 
             // 如果沒有匹配，返回原始輸入
             return input;
+        }
+        
+        /// <summary>
+        /// 搜索組件名稱
+        /// </summary>
+        /// <param name="query">搜索查詢</param>
+        /// <returns>匹配的組件名稱列表</returns>
+        public static List<string> SearchComponents(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return new List<string>();
+                
+            var results = new List<string>();
+            var normalizedQuery = query.ToLowerInvariant();
+            
+            // 搜索組件名稱映射
+            foreach (var kvp in ComponentNameMap)
+            {
+                if (kvp.Key.Contains(normalizedQuery) || kvp.Value.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    results.Add(kvp.Value);
+                }
+            }
+            
+            return results.Distinct().ToList();
         }
     }
 }

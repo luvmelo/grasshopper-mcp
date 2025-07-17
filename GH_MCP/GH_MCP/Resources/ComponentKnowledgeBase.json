@@ -55,6 +55,19 @@
       ]
     },
     {
+      "name": "Sphere",
+      "category": "Surface",
+      "subcategory": "Primitive",
+      "description": "Creates a sphere from a base plane and radius",
+      "inputs": [
+        {"name": "Base", "type": "Plane", "description": "Base plane"},
+        {"name": "Radius", "type": "Number", "description": "Sphere radius"}
+      ],
+      "outputs": [
+        {"name": "Sphere", "type": "Brep", "description": "Sphere geometry"}
+      ]
+    },
+    {
       "name": "Number Slider",
       "category": "Params",
       "subcategory": "Input",
@@ -139,6 +152,359 @@
       "outputs": [
         {"name": "Result", "type": "Brep", "description": "Extruded geometry"}
       ]
+    },
+    {
+      "name": "Addition",
+      "category": "Maths",
+      "subcategory": "Operators",
+      "description": "Mathematical addition",
+      "inputs": [
+        {"name": "A", "type": "Number", "description": "First number"},
+        {"name": "B", "type": "Number", "description": "Second number"}
+      ],
+      "outputs": [
+        {"name": "Result", "type": "Number", "description": "A + B"}
+      ]
+    },
+    {
+      "name": "Subtraction",
+      "category": "Maths",
+      "subcategory": "Operators",
+      "description": "Mathematical subtraction",
+      "inputs": [
+        {"name": "A", "type": "Number", "description": "First number"},
+        {"name": "B", "type": "Number", "description": "Second number"}
+      ],
+      "outputs": [
+        {"name": "Result", "type": "Number", "description": "A - B"}
+      ]
+    },
+    {
+      "name": "Multiplication",
+      "category": "Maths",
+      "subcategory": "Operators",
+      "description": "Mathematical multiplication",
+      "inputs": [
+        {"name": "A", "type": "Number", "description": "First number"},
+        {"name": "B", "type": "Number", "description": "Second number"}
+      ],
+      "outputs": [
+        {"name": "Result", "type": "Number", "description": "A × B"}
+      ]
+    },
+    {
+      "name": "Division",
+      "category": "Maths",
+      "subcategory": "Operators",
+      "description": "Mathematical division",
+      "inputs": [
+        {"name": "A", "type": "Number", "description": "Dividend"},
+        {"name": "B", "type": "Number", "description": "Divisor"}
+      ],
+      "outputs": [
+        {"name": "Result", "type": "Number", "description": "A ÷ B"}
+      ]
+    },
+    {
+      "name": "List Item",
+      "category": "Sets",
+      "subcategory": "List",
+      "description": "Retrieve a specific item from a list",
+      "inputs": [
+        {"name": "List", "type": "Any", "description": "List to retrieve from"},
+        {"name": "Index", "type": "Integer", "description": "Index of item to retrieve"},
+        {"name": "Wrap", "type": "Boolean", "description": "Wrap index to list bounds", "optional": true}
+      ],
+      "outputs": [
+        {"name": "Item", "type": "Any", "description": "Item at the specified index"}
+      ]
+    },
+    {
+      "name": "List Length",
+      "category": "Sets",
+      "subcategory": "List",
+      "description": "Measure the length of a list",
+      "inputs": [
+        {"name": "List", "type": "Any", "description": "List to measure"}
+      ],
+      "outputs": [
+        {"name": "Length", "type": "Integer", "description": "Number of items in the list"}
+      ]
+    },
+    {
+      "name": "Series",
+      "category": "Sets",
+      "subcategory": "Sequence",
+      "description": "Create a series of numbers",
+      "inputs": [
+        {"name": "Start", "type": "Number", "description": "First number in the series"},
+        {"name": "Step", "type": "Number", "description": "Step size between numbers"},
+        {"name": "Count", "type": "Integer", "description": "Number of values"}
+      ],
+      "outputs": [
+        {"name": "Series", "type": "Number", "description": "Series of numbers"}
+      ]
+    },
+    {
+      "name": "Range",
+      "category": "Sets",
+      "subcategory": "Sequence",
+      "description": "Create a range of numbers",
+      "inputs": [
+        {"name": "Domain", "type": "Domain", "description": "Domain of values"},
+        {"name": "Steps", "type": "Integer", "description": "Number of steps"}
+      ],
+      "outputs": [
+        {"name": "Range", "type": "Number", "description": "Range of numbers"}
+      ]
+    },
+    {
+      "name": "Move",
+      "category": "Transform",
+      "subcategory": "Euclidean",
+      "description": "Translate (move) objects along a vector",
+      "inputs": [
+        {"name": "Geometry", "type": "Geometry", "description": "Base geometry"},
+        {"name": "Motion", "type": "Vector", "description": "Translation vector"}
+      ],
+      "outputs": [
+        {"name": "Geometry", "type": "Geometry", "description": "Translated geometry"},
+        {"name": "Transform", "type": "Transform", "description": "Transformation data"}
+      ]
+    },
+    {
+      "name": "Rotate",
+      "category": "Transform",
+      "subcategory": "Euclidean",
+      "description": "Rotate objects around an axis",
+      "inputs": [
+        {"name": "Geometry", "type": "Geometry", "description": "Base geometry"},
+        {"name": "Angle", "type": "Number", "description": "Rotation angle in radians"},
+        {"name": "Plane", "type": "Plane", "description": "Rotation plane"}
+      ],
+      "outputs": [
+        {"name": "Geometry", "type": "Geometry", "description": "Rotated geometry"},
+        {"name": "Transform", "type": "Transform", "description": "Transformation data"}
+      ]
+    },
+    {
+      "name": "Scale",
+      "category": "Transform",
+      "subcategory": "Euclidean",
+      "description": "Scale objects uniformly or non-uniformly",
+      "inputs": [
+        {"name": "Geometry", "type": "Geometry", "description": "Base geometry"},
+        {"name": "Center", "type": "Point", "description": "Center of scaling"},
+        {"name": "Factor", "type": "Number", "description": "Scale factor"}
+      ],
+      "outputs": [
+        {"name": "Geometry", "type": "Geometry", "description": "Scaled geometry"},
+        {"name": "Transform", "type": "Transform", "description": "Transformation data"}
+      ]
+    },
+    {
+      "name": "Line",
+      "category": "Curve",
+      "subcategory": "Primitive",
+      "description": "Create a line between two points",
+      "inputs": [
+        {"name": "Start", "type": "Point", "description": "Line start point"},
+        {"name": "End", "type": "Point", "description": "Line end point"}
+      ],
+      "outputs": [
+        {"name": "Line", "type": "Curve", "description": "Line curve"}
+      ]
+    },
+    {
+      "name": "Rectangle",
+      "category": "Curve",
+      "subcategory": "Primitive",
+      "description": "Create a rectangle on a plane",
+      "inputs": [
+        {"name": "Plane", "type": "Plane", "description": "Rectangle plane"},
+        {"name": "X Size", "type": "Number", "description": "Size in X direction"},
+        {"name": "Y Size", "type": "Number", "description": "Size in Y direction"},
+        {"name": "Radius", "type": "Number", "description": "Corner fillet radius", "optional": true}
+      ],
+      "outputs": [
+        {"name": "Rectangle", "type": "Curve", "description": "Rectangle curve"}
+      ]
+    },
+    {
+      "name": "Cylinder",
+      "category": "Surface",
+      "subcategory": "Primitive",
+      "description": "Create a cylinder",
+      "inputs": [
+        {"name": "Base", "type": "Plane", "description": "Base plane"},
+        {"name": "Radius", "type": "Number", "description": "Cylinder radius"},
+        {"name": "Height", "type": "Number", "description": "Cylinder height"}
+      ],
+      "outputs": [
+        {"name": "Cylinder", "type": "Brep", "description": "Cylinder geometry"}
+      ]
+    },
+    {
+      "name": "Cone",
+      "category": "Surface",
+      "subcategory": "Primitive",
+      "description": "Create a cone",
+      "inputs": [
+        {"name": "Base", "type": "Plane", "description": "Base plane"},
+        {"name": "Radius", "type": "Number", "description": "Base radius"},
+        {"name": "Height", "type": "Number", "description": "Cone height"}
+      ],
+      "outputs": [
+        {"name": "Cone", "type": "Brep", "description": "Cone geometry"}
+      ]
+    },
+    {
+      "name": "Boolean Toggle",
+      "category": "Params",
+      "subcategory": "Input",
+      "description": "Boolean (true/false) toggle",
+      "inputs": [],
+      "outputs": [
+        {"name": "Boolean", "type": "Boolean", "description": "Boolean value"}
+      ],
+      "defaultSettings": {
+        "value": false
+      }
+    },
+    {
+      "name": "Integer",
+      "category": "Params",
+      "subcategory": "Primitive",
+      "description": "Integer parameter",
+      "inputs": [],
+      "outputs": [
+        {"name": "Integer", "type": "Integer", "description": "Integer value"}
+      ]
+    },
+    {
+      "name": "Construct Point",
+      "category": "Vector",
+      "subcategory": "Point",
+      "description": "Construct a point from coordinates",
+      "inputs": [
+        {"name": "X", "type": "Number", "description": "X coordinate"},
+        {"name": "Y", "type": "Number", "description": "Y coordinate"},
+        {"name": "Z", "type": "Number", "description": "Z coordinate"}
+      ],
+      "outputs": [
+        {"name": "Point", "type": "Point", "description": "Point"}
+      ]
+    },
+    {
+      "name": "Vector 2Pt",
+      "category": "Vector",
+      "subcategory": "Vector",
+      "description": "Create a vector between two points",
+      "inputs": [
+        {"name": "Point A", "type": "Point", "description": "Base point"},
+        {"name": "Point B", "type": "Point", "description": "Tip point"},
+        {"name": "Unitize", "type": "Boolean", "description": "Unitize output", "optional": true}
+      ],
+      "outputs": [
+        {"name": "Vector", "type": "Vector", "description": "Vector"},
+        {"name": "Length", "type": "Number", "description": "Vector length"}
+      ]
+    },
+    {
+      "name": "Distance",
+      "category": "Vector",
+      "subcategory": "Point",
+      "description": "Compute Euclidean distance between two points",
+      "inputs": [
+        {"name": "Point A", "type": "Point", "description": "First point"},
+        {"name": "Point B", "type": "Point", "description": "Second point"}
+      ],
+      "outputs": [
+        {"name": "Distance", "type": "Number", "description": "Distance between points"}
+      ]
+    },
+    {
+      "name": "Loft",
+      "category": "Surface",
+      "subcategory": "Freeform",
+      "description": "Create a lofted surface through curves",
+      "inputs": [
+        {"name": "Curves", "type": "Curve", "description": "Section curves"},
+        {"name": "Options", "type": "Integer", "description": "Loft options", "optional": true}
+      ],
+      "outputs": [
+        {"name": "Loft", "type": "Brep", "description": "Lofted surface"}
+      ]
+    },
+    {
+      "name": "Curve Length",
+      "category": "Curve",
+      "subcategory": "Analysis",
+      "description": "Measure the length of a curve",
+      "inputs": [
+        {"name": "Curve", "type": "Curve", "description": "Curve to measure"}
+      ],
+      "outputs": [
+        {"name": "Length", "type": "Number", "description": "Curve length"}
+      ]
+    },
+    {
+      "name": "Evaluate Curve",
+      "category": "Curve",
+      "subcategory": "Analysis",
+      "description": "Evaluate a curve at a specified parameter",
+      "inputs": [
+        {"name": "Curve", "type": "Curve", "description": "Curve to evaluate"},
+        {"name": "Parameter", "type": "Number", "description": "Parameter on curve"}
+      ],
+      "outputs": [
+        {"name": "Point", "type": "Point", "description": "Point on curve"},
+        {"name": "Tangent", "type": "Vector", "description": "Tangent vector"}
+      ]
+    },
+    {
+      "name": "Divide Curve",
+      "category": "Curve",
+      "subcategory": "Division",
+      "description": "Divide a curve into equal segments",
+      "inputs": [
+        {"name": "Curve", "type": "Curve", "description": "Curve to divide"},
+        {"name": "Count", "type": "Integer", "description": "Number of segments"},
+        {"name": "Kinks", "type": "Boolean", "description": "Split at kinks", "optional": true}
+      ],
+      "outputs": [
+        {"name": "Points", "type": "Point", "description": "Division points"},
+        {"name": "Tangents", "type": "Vector", "description": "Tangent vectors"},
+        {"name": "Parameters", "type": "Number", "description": "Parameter values"}
+      ]
+    },
+    {
+      "name": "Join Curves",
+      "category": "Curve",
+      "subcategory": "Util",
+      "description": "Join a collection of curves",
+      "inputs": [
+        {"name": "Curves", "type": "Curve", "description": "Curves to join"},
+        {"name": "Preserve", "type": "Boolean", "description": "Preserve direction", "optional": true}
+      ],
+      "outputs": [
+        {"name": "Curves", "type": "Curve", "description": "Joined curves"}
+      ]
+    },
+    {
+      "name": "Offset Curve",
+      "category": "Curve",
+      "subcategory": "Util",
+      "description": "Offset a curve by a distance",
+      "inputs": [
+        {"name": "Curve", "type": "Curve", "description": "Curve to offset"},
+        {"name": "Distance", "type": "Number", "description": "Offset distance"},
+        {"name": "Plane", "type": "Plane", "description": "Offset plane"},
+        {"name": "Corners", "type": "Integer", "description": "Corner type", "optional": true}
+      ],
+      "outputs": [
+        {"name": "Curve", "type": "Curve", "description": "Offset curve"}
+      ]
     }
   ],
   "patterns": [
@@ -196,6 +562,133 @@
         {"source": "plane", "sourceParam": "Plane", "target": "circle", "targetParam": "Plane"},
         {"source": "radius", "sourceParam": "Number", "target": "circle", "targetParam": "Radius"}
       ]
+    },
+    {
+      "name": "Sphere",
+      "description": "Creates a 3D sphere geometry",
+      "components": [
+        {"type": "XY Plane", "x": 100, "y": 100, "id": "plane"},
+        {"type": "Number Slider", "x": 100, "y": 200, "id": "radius", "settings": {"min": 0, "max": 50, "value": 10}},
+        {"type": "Sphere", "x": 400, "y": 150, "id": "sphere"}
+      ],
+      "connections": [
+        {"source": "plane", "sourceParam": "Plane", "target": "sphere", "targetParam": "Base"},
+        {"source": "radius", "sourceParam": "Number", "target": "sphere", "targetParam": "Radius"}
+      ]
+    },
+    {
+      "name": "Cylinder Tower",
+      "description": "Creates a cylinder geometry with adjustable height and radius",
+      "components": [
+        {"type": "XY Plane", "x": 100, "y": 100, "id": "plane"},
+        {"type": "Number Slider", "x": 100, "y": 200, "id": "radius", "settings": {"min": 0, "max": 20, "value": 5}},
+        {"type": "Number Slider", "x": 100, "y": 250, "id": "height", "settings": {"min": 0, "max": 100, "value": 30}},
+        {"type": "Cylinder", "x": 400, "y": 150, "id": "cylinder"}
+      ],
+      "connections": [
+        {"source": "plane", "sourceParam": "Plane", "target": "cylinder", "targetParam": "Base"},
+        {"source": "radius", "sourceParam": "Number", "target": "cylinder", "targetParam": "Radius"},
+        {"source": "height", "sourceParam": "Number", "target": "cylinder", "targetParam": "Height"}
+      ]
+    },
+    {
+      "name": "Parametric Grid",
+      "description": "Creates a grid of points using series",
+      "components": [
+        {"type": "Number Slider", "x": 100, "y": 100, "id": "countX", "settings": {"min": 2, "max": 20, "value": 10}},
+        {"type": "Number Slider", "x": 100, "y": 150, "id": "countY", "settings": {"min": 2, "max": 20, "value": 10}},
+        {"type": "Number Slider", "x": 100, "y": 200, "id": "spacing", "settings": {"min": 1, "max": 10, "value": 2}},
+        {"type": "Series", "x": 300, "y": 100, "id": "seriesX"},
+        {"type": "Series", "x": 300, "y": 200, "id": "seriesY"},
+        {"type": "Construct Point", "x": 500, "y": 150, "id": "points"}
+      ],
+      "connections": [
+        {"source": "countX", "sourceParam": "Number", "target": "seriesX", "targetParam": "Count"},
+        {"source": "spacing", "sourceParam": "Number", "target": "seriesX", "targetParam": "Step"},
+        {"source": "countY", "sourceParam": "Number", "target": "seriesY", "targetParam": "Count"},
+        {"source": "spacing", "sourceParam": "Number", "target": "seriesY", "targetParam": "Step"},
+        {"source": "seriesX", "sourceParam": "Series", "target": "points", "targetParam": "X"},
+        {"source": "seriesY", "sourceParam": "Series", "target": "points", "targetParam": "Y"}
+      ]
+    },
+    {
+      "name": "Transformed Box",
+      "description": "Creates a box and transforms it",
+      "components": [
+        {"type": "XY Plane", "x": 100, "y": 100, "id": "plane"},
+        {"type": "Number Slider", "x": 100, "y": 200, "id": "size", "settings": {"min": 0, "max": 20, "value": 10}},
+        {"type": "Box", "x": 300, "y": 150, "id": "box"},
+        {"type": "Number Slider", "x": 100, "y": 300, "id": "moveX", "settings": {"min": -50, "max": 50, "value": 20}},
+        {"type": "Construct Point", "x": 300, "y": 350, "id": "moveVector"},
+        {"type": "Move", "x": 500, "y": 200, "id": "move"}
+      ],
+      "connections": [
+        {"source": "plane", "sourceParam": "Plane", "target": "box", "targetParam": "Base"},
+        {"source": "size", "sourceParam": "Number", "target": "box", "targetParam": "X Size"},
+        {"source": "size", "sourceParam": "Number", "target": "box", "targetParam": "Y Size"},
+        {"source": "size", "sourceParam": "Number", "target": "box", "targetParam": "Z Size"},
+        {"source": "box", "sourceParam": "Box", "target": "move", "targetParam": "Geometry"},
+        {"source": "moveX", "sourceParam": "Number", "target": "moveVector", "targetParam": "X"},
+        {"source": "moveVector", "sourceParam": "Point", "target": "move", "targetParam": "Motion"}
+      ]
+    },
+    {
+      "name": "Math Operations",
+      "description": "Demonstrates basic mathematical operations",
+      "components": [
+        {"type": "Number Slider", "x": 100, "y": 100, "id": "numA", "settings": {"min": 0, "max": 10, "value": 5}},
+        {"type": "Number Slider", "x": 100, "y": 150, "id": "numB", "settings": {"min": 0, "max": 10, "value": 3}},
+        {"type": "Addition", "x": 300, "y": 100, "id": "add"},
+        {"type": "Multiplication", "x": 300, "y": 200, "id": "multiply"},
+        {"type": "Panel", "x": 500, "y": 100, "id": "sumPanel"},
+        {"type": "Panel", "x": 500, "y": 200, "id": "productPanel"}
+      ],
+      "connections": [
+        {"source": "numA", "sourceParam": "Number", "target": "add", "targetParam": "A"},
+        {"source": "numB", "sourceParam": "Number", "target": "add", "targetParam": "B"},
+        {"source": "numA", "sourceParam": "Number", "target": "multiply", "targetParam": "A"},
+        {"source": "numB", "sourceParam": "Number", "target": "multiply", "targetParam": "B"},
+        {"source": "add", "sourceParam": "Result", "target": "sumPanel", "targetParam": "Input"},
+        {"source": "multiply", "sourceParam": "Result", "target": "productPanel", "targetParam": "Input"}
+      ]
+    },
+    {
+      "name": "Line Between Points",
+      "description": "Creates a line between two constructed points",
+      "components": [
+        {"type": "Number Slider", "x": 100, "y": 100, "id": "x1", "settings": {"min": -10, "max": 10, "value": 0}},
+        {"type": "Number Slider", "x": 100, "y": 150, "id": "y1", "settings": {"min": -10, "max": 10, "value": 0}},
+        {"type": "Number Slider", "x": 100, "y": 200, "id": "x2", "settings": {"min": -10, "max": 10, "value": 10}},
+        {"type": "Number Slider", "x": 100, "y": 250, "id": "y2", "settings": {"min": -10, "max": 10, "value": 10}},
+        {"type": "Construct Point", "x": 300, "y": 125, "id": "point1"},
+        {"type": "Construct Point", "x": 300, "y": 225, "id": "point2"},
+        {"type": "Line", "x": 500, "y": 175, "id": "line"}
+      ],
+      "connections": [
+        {"source": "x1", "sourceParam": "Number", "target": "point1", "targetParam": "X"},
+        {"source": "y1", "sourceParam": "Number", "target": "point1", "targetParam": "Y"},
+        {"source": "x2", "sourceParam": "Number", "target": "point2", "targetParam": "X"},
+        {"source": "y2", "sourceParam": "Number", "target": "point2", "targetParam": "Y"},
+        {"source": "point1", "sourceParam": "Point", "target": "line", "targetParam": "Start"},
+        {"source": "point2", "sourceParam": "Point", "target": "line", "targetParam": "End"}
+      ]
+    },
+    {
+      "name": "Divided Circle",
+      "description": "Creates a circle and divides it into points",
+      "components": [
+        {"type": "XY Plane", "x": 100, "y": 100, "id": "plane"},
+        {"type": "Number Slider", "x": 100, "y": 200, "id": "radius", "settings": {"min": 0, "max": 50, "value": 20}},
+        {"type": "Circle", "x": 300, "y": 150, "id": "circle"},
+        {"type": "Number Slider", "x": 100, "y": 300, "id": "divisions", "settings": {"min": 3, "max": 50, "value": 12}},
+        {"type": "Divide Curve", "x": 500, "y": 200, "id": "divide"}
+      ],
+      "connections": [
+        {"source": "plane", "sourceParam": "Plane", "target": "circle", "targetParam": "Plane"},
+        {"source": "radius", "sourceParam": "Number", "target": "circle", "targetParam": "Radius"},
+        {"source": "circle", "sourceParam": "Circle", "target": "divide", "targetParam": "Curve"},
+        {"source": "divisions", "sourceParam": "Number", "target": "divide", "targetParam": "Count"}
+      ]
     }
   ],
   "intents": [
@@ -210,6 +703,34 @@
     {
       "keywords": ["circle", "round", "disc"],
       "pattern": "Circle"
+    },
+    {
+      "keywords": ["sphere", "ball", "3d", "geometry", "round"],
+      "pattern": "Sphere"
+    },
+    {
+      "keywords": ["cylinder", "tower", "column", "tube", "pipe"],
+      "pattern": "Cylinder Tower"
+    },
+    {
+      "keywords": ["grid", "array", "points", "parametric", "pattern"],
+      "pattern": "Parametric Grid"
+    },
+    {
+      "keywords": ["transform", "move", "translate", "box", "shifted"],
+      "pattern": "Transformed Box"
+    },
+    {
+      "keywords": ["math", "add", "multiply", "arithmetic", "calculation"],
+      "pattern": "Math Operations"
+    },
+    {
+      "keywords": ["line", "connect", "between", "points"],
+      "pattern": "Line Between Points"
+    },
+    {
+      "keywords": ["divide", "circle", "points", "division", "split"],
+      "pattern": "Divided Circle"
     }
   ]
 }

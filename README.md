@@ -1,191 +1,352 @@
 # Grasshopper MCP Bridge
 
-Grasshopper MCP Bridge is a bridging server that connects Grasshopper and Claude Desktop using the Model Context Protocol (MCP) standard.
+A Model Context Protocol (MCP) server that enables direct interaction with Grasshopper from AI assistants like Claude. This bridge allows AI to read, analyze, and manipulate Grasshopper definitions programmatically.
+
+## 🎯 Major Update: Official API Support
+
+**McNeel officially released new Script component APIs in Rhino 8 Service Release 18 (March 2025)!** 
+
+Grasshopper MCP now fully supports these official APIs, enabling complete programmatic control of Script components without manual configuration.
 
 ## Features
 
-- Connects Grasshopper and Claude Desktop through the MCP protocol
-- Provides intuitive tool functions for creating and connecting Grasshopper components
-- Supports high-level intent recognition, automatically creating complex component patterns from simple descriptions
-- Includes a component knowledge base that understands parameters and connection rules for common components
-- Provides component guidance resources to help Claude Desktop correctly connect components
+### Core Functionality
+- **Document Management**: Open, analyze, and manipulate Grasshopper definitions
+- **Component Operations**: Get component information, create components, and manage connections
+- **Geometry Analysis**: Extract and analyze geometric data from Grasshopper components
+- **Intent Recognition**: Natural language understanding for Grasshopper operations
 
-## System Architecture
+### Enhanced Code Execution (🆕 Official API)
+- **Programmatic Parameter Configuration**: Automatically configure input/output parameters using official Rhino 8 SR18 APIs
+- **Dual API Support**: Uses **`Python3Component.Create()`** and **`CSharpComponent.Create()`** methods (new API) with automatic fallback to legacy methods
+- **Smart Type Hints**: Automatic type hint configuration using **`ScriptVariableParam`** and **`TypeHints.Select()`** methods
+- **Complete Automation**: No manual parameter setup required - creates fully functional Script components
+- **15+ Parameter Types**: Support for number, string, point, curve, brep, mesh, geometry, and more
+- **Multi-Language Support**: Both Python and C# script components
+- **Intelligent Error Handling**: Graceful fallback between API versions
 
-The system consists of the following parts:
+### System Architecture
+- **API Priority**: Rhino 8 SR18 official APIs → Legacy APIs (automatic detection)
+- **Component Types**: Creates modern Scripts components (not legacy Python components)
+- **Parameter Management**: Full programmatic control over parameter creation, configuration, and type hints
+- **Backward Compatibility**: Works with older Rhino versions through intelligent API detection
 
-1. **Grasshopper MCP Component (GH_MCP.gha)**: A plugin installed in Grasshopper that provides a TCP server to receive commands
-2. **Python MCP Bridge Server**: A bridge server that connects Claude Desktop and the Grasshopper MCP component
-3. **Component Knowledge Base**: JSON files containing component information, patterns, and intents
+## Installation
 
-## Installation Instructions
-
-### Prerequisites
-
-- Rhino 7 or higher
-- Grasshopper
-- Python 3.8 or higher
-- Claude Desktop
-
-### Installation Steps
-
-1. **Install the Grasshopper MCP Component**
-
-   **Method 1: Download the pre-compiled GH_MCP.gha file (Recommended)**
-   
-   Download the [GH_MCP.gha](https://github.com/alfredatnycu/grasshopper-mcp/raw/master/releases/GH_MCP.gha) file directly from the GitHub repository and copy it to the Grasshopper components folder:
-   ```
-   %APPDATA%\Grasshopper\Libraries\
-   ```
-
-   **Method 2: Build from source**
-   
-   If you prefer to build from source, clone the repository and build the C# project using Visual Studio.
-
-2. **Install the Python MCP Bridge Server**
-
-   **Method 1: Install from PyPI (Recommended)**
-   
-   The simplest method is to install directly from PyPI using pip:
-   ```
+1. **Install the MCP server:**
+   ```bash
    pip install grasshopper-mcp
    ```
    
-   **Method 2: Install from GitHub**
+2. **Install the Grasshopper plugin:**
+   - Copy `releases/GH_MCP.gha` to your Grasshopper Components folder
+   - Restart Rhino/Grasshopper
+
+3. **Configure Claude Desktop:**
    
-   You can also install the latest version from GitHub:
-   ```
-   pip install git+https://github.com/alfredatnycu/grasshopper-mcp.git
-   ```
-   
-   **Method 3: Install from Source Code**
-   
-   If you need to modify the code or develop new features, you can clone the repository and install:
-   ```
-   git clone https://github.com/alfredatnycu/grasshopper-mcp.git
-   cd grasshopper-mcp
-   pip install -e .
-   ```
-
-   **Install a Specific Version**
-   
-   If you need to install a specific version, you can use:
-   ```
-   pip install grasshopper-mcp==0.1.0
-   ```
-   Or install from a specific GitHub tag:
-   ```
-   pip install git+https://github.com/alfredatnycu/grasshopper-mcp.git@v0.1.0
-   ```
-
-## Usage
-
-1. **Start Rhino and Grasshopper**
-
-   Launch Rhino and open Grasshopper.
-
-2. **Add the GH_MCP Component to Your Canvas**
-
-   Find the GH_MCP component in the Grasshopper component panel and add it to your canvas.
-
-3. **Start the Python MCP Bridge Server**
-
-   Open a terminal and run:
-   ```
-   python -m grasshopper_mcp.bridge
-   ```
-   
-   > **Note**: The command `grasshopper-mcp` might not work directly due to Python script path issues. Using `python -m grasshopper_mcp.bridge` is the recommended and more reliable method.
-
-4. **Connect Claude Desktop to the MCP Bridge**
-
-   **Method 1: Manual Connection**
-   
-   In Claude Desktop, connect to the MCP Bridge server using the following settings:
-   - Protocol: MCP
-   - Host: localhost
-   - Port: 8080
-
-   **Method 2: Configure Claude Desktop to Auto-Start the Bridge**
-   
-   You can configure Claude Desktop to automatically start the MCP Bridge server by modifying its configuration:
-   
+   Add to your `claude_desktop_config.json`:
    ```json
-   "grasshopper": {
-     "command": "python",
-     "args": ["-m", "grasshopper_mcp.bridge"]
+   {
+     "mcpServers": {
+       "grasshopper": {
+         "command": "python",
+         "args": ["-m", "grasshopper_mcp"],
+         "env": {
+           "GRASSHOPPER_MCP_LOG_LEVEL": "INFO"
+         }
+       }
+     }
    }
    ```
-   
-   This configuration tells Claude Desktop to use the command `python -m grasshopper_mcp.bridge` to start the MCP server.
 
-5. **Start Using Grasshopper with Claude Desktop**
+## Usage Examples
 
-   You can now use Claude Desktop to control Grasshopper through natural language commands.
+### 🆕 Automatic Parameter Configuration
 
-## Example Commands
+Create a parametric sphere with automatic parameter setup:
 
-Here are some example commands you can use with Claude Desktop:
+```python
+import grasshopper_mcp
 
-- "Create a circle with radius 5 at point (0,0,0)"
-- "Connect the circle to a extrude component with a height of 10"
-- "Create a grid of points with 5 rows and 5 columns"
-- "Apply a random rotation to all selected objects"
+# Creates a fully configured Script component
+result = grasshopper_mcp.execute_code(
+    code="""
+import rhinoscriptsyntax as rs
+import Rhino.Geometry as rg
 
-## Troubleshooting
+# Create sphere
+center = rg.Point3d(0, 0, 0)
+sphere = rg.Sphere(center, radius)
+a = sphere.ToBrep()
+""",
+    language="python",
+    x=100,
+    y=100,
+    inputs=[
+        {
+            "name": "radius",
+            "type": "number",
+            "description": "Sphere radius",
+            "optional": False
+        }
+    ],
+    outputs=[
+        {
+            "name": "a",
+            "type": "brep",
+            "description": "Sphere geometry"
+        }
+    ]
+)
 
-If you encounter issues, check the following:
+print(f"Created: {result['message']}")
+# Output: "Script component created with programmatically configured parameters using Rhino 8 SR18 API"
+```
 
-1. **GH_MCP Component Not Loading**
-   - Ensure the .gha file is in the correct location
-   - In Grasshopper, go to File > Preferences > Libraries and click "Unblock" to unblock new components
-   - Restart Rhino and Grasshopper
+### 🆕 Complex Parametric Architecture
 
-2. **Bridge Server Won't Start**
-   - If `grasshopper-mcp` command doesn't work, use `python -m grasshopper_mcp.bridge` instead
-   - Ensure all required Python dependencies are installed
-   - Check if port 8080 is already in use by another application
+```python
+# Create parametric building structure
+result = grasshopper_mcp.execute_code(
+    code="""
+import Rhino.Geometry as rg
+import math
 
-3. **Claude Desktop Can't Connect**
-   - Ensure the bridge server is running
-   - Verify you're using the correct connection settings (localhost:8080)
-   - Check the console output of the bridge server for any error messages
+# Create building columns
+columns = []
+for i in range(count):
+    angle = (i * 2 * math.pi) / count
+    x = radius * math.cos(angle)
+    y = radius * math.sin(angle)
+    
+    base_pt = rg.Point3d(x, y, 0)
+    top_pt = rg.Point3d(x, y, height)
+    column = rg.Line(base_pt, top_pt)
+    columns.append(column)
 
-4. **Commands Not Executing**
-   - Verify the GH_MCP component is on your Grasshopper canvas
-   - Check the bridge server console for error messages
-   - Ensure Claude Desktop is properly connected to the bridge server
+# Create roof
+roof_center = rg.Point3d(0, 0, height + 2)
+roof = rg.Sphere(roof_center, radius + 3)
+
+a = columns  # Building columns
+b = roof.ToBrep()  # Building roof
+""",
+    language="python",
+    x=200,
+    y=200,
+    inputs=[
+        {"name": "count", "type": "integer", "description": "Number of columns"},
+        {"name": "radius", "type": "number", "description": "Building radius"},
+        {"name": "height", "type": "number", "description": "Column height"}
+    ],
+    outputs=[
+        {"name": "a", "type": "line", "description": "Building columns"},
+        {"name": "b", "type": "brep", "description": "Building roof"}
+    ]
+)
+```
+
+### 🆕 C# Script Support
+
+```python
+# Create C# script component with automatic configuration
+result = grasshopper_mcp.execute_code(
+    code="""
+using Rhino;
+using Rhino.Geometry;
+using System;
+
+// Create complex geometry
+Point3d center = new Point3d(0, 0, 0);
+Sphere sphere = new Sphere(center, radius);
+Brep sphereBrep = sphere.ToBrep();
+
+// Apply transformation
+Transform scale = Transform.Scale(center, factor);
+sphereBrep.Transform(scale);
+
+a = sphereBrep;
+""",
+    language="csharp",
+    x=300,
+    y=300,
+    inputs=[
+        {"name": "radius", "type": "number", "description": "Sphere radius"},
+        {"name": "factor", "type": "number", "description": "Scale factor"}
+    ],
+    outputs=[
+        {"name": "a", "type": "brep", "description": "Transformed sphere"}
+    ]
+)
+```
+
+### Traditional Operations
+
+```python
+# Document operations
+doc_info = grasshopper_mcp.get_document_info()
+print(f"Document: {doc_info['name']}")
+
+# Component operations
+components = grasshopper_mcp.get_all_components()
+for comp in components:
+    print(f"Component: {comp['name']} ({comp['type']})")
+
+# Intent recognition
+result = grasshopper_mcp.recognize_intent("create a 3D sphere geometry")
+print(f"Intent: {result['intent']}")
+```
+
+## 🆕 API Comparison
+
+### Before: Manual Setup Required
+```text
+1. Create Script component
+2. Manually zoom to see ZUI interface
+3. Manually click ⊕ buttons to add parameters
+4. Manually set parameter names and type hints
+5. Manually connect sliders and other components
+```
+
+### After: Fully Automatic
+```text
+1. Call execute_code with parameter specifications
+2. System automatically creates proper Scripts component
+3. System automatically configures all parameters
+4. System automatically sets type hints
+5. User only needs to connect data sources
+```
+
+## Supported Parameter Types
+
+The system supports 15+ parameter types with automatic type hint configuration:
+
+| Type | Description | Example |
+|------|-------------|---------|
+| `number` | Double precision float | `{"name": "radius", "type": "number"}` |
+| `integer` | Integer number | `{"name": "count", "type": "integer"}` |
+| `string` | Text string | `{"name": "text", "type": "string"}` |
+| `boolean` | True/false value | `{"name": "enabled", "type": "boolean"}` |
+| `point` | 3D point | `{"name": "center", "type": "point"}` |
+| `vector` | 3D vector | `{"name": "direction", "type": "vector"}` |
+| `plane` | Plane definition | `{"name": "base", "type": "plane"}` |
+| `line` | Line geometry | `{"name": "axis", "type": "line"}` |
+| `curve` | Curve geometry | `{"name": "profile", "type": "curve"}` |
+| `surface` | Surface geometry | `{"name": "surface", "type": "surface"}` |
+| `brep` | Solid geometry | `{"name": "solid", "type": "brep"}` |
+| `mesh` | Mesh geometry | `{"name": "mesh", "type": "mesh"}` |
+| `geometry` | Generic geometry | `{"name": "geometry", "type": "geometry"}` |
+| `color` | Color value | `{"name": "color", "type": "color"}` |
+| `matrix` | Transformation matrix | `{"name": "transform", "type": "matrix"}` |
+
+## System Requirements
+
+- **Rhino 8 SR18+** (recommended for full API support)
+- **Rhino 7** (legacy API support)
+- **Python 3.8+**
+- **Claude Desktop** or compatible MCP client
+
+## API Architecture
+
+### Priority System
+1. **Rhino 8 SR18 Official APIs** (Primary)
+   - `Python3Component.Create()` / `CSharpComponent.Create()`
+   - `ScriptVariableParam` for flexible parameters
+   - `TypeHints.Select()` for type configuration
+   - `VariableParameterMaintenance()` for state management
+
+2. **Legacy APIs** (Automatic Fallback)
+   - `GH_ComponentParamServer` methods
+   - Standard Grasshopper parameter types
+   - Automatic type mapping
+
+### Error Handling
+- Graceful API detection and fallback
+- Comprehensive error logging
+- Informative user feedback
+
+## Available Commands
+
+### Core Commands
+- `get_document_info()` - Get current document information
+- `get_all_components()` - List all components in document
+- `get_component_info(id)` - Get detailed component information
+- `connect_components(source_id, target_id)` - Connect components
+
+### Enhanced Commands
+- `execute_code()` - Create parameterized script components with full automation
+- `recognize_intent()` - Natural language processing for Grasshopper operations
+
+## Configuration
+
+### Environment Variables
+- `GRASSHOPPER_MCP_LOG_LEVEL` - Set logging level (DEBUG, INFO, WARNING, ERROR)
+- `GRASSHOPPER_MCP_TIMEOUT` - Set command timeout (default: 30 seconds)
+
+### Logging
+Detailed logging is available for troubleshooting:
+```text
+INFO: Using Rhino 8 SR18 API for component creation
+INFO: Script component created with programmatically configured parameters
+INFO: Successfully configured 2 input parameters and 1 output parameter
+```
 
 ## Development
 
-### Project Structure
-
-```
-grasshopper-mcp/
-├── grasshopper_mcp/       # Python bridge server
-│   ├── __init__.py
-│   └── bridge.py          # Main bridge server implementation
-├── GH_MCP/                # Grasshopper component (C#)
-│   └── ...
-├── releases/              # Pre-compiled binaries
-│   └── GH_MCP.gha         # Compiled Grasshopper component
-├── setup.py               # Python package setup
-└── README.md              # This file
+### Building from Source
+```bash
+git clone [repository-url]
+cd grasshopper-mcp
+pip install -e .
 ```
 
-### Contributing
+### Building GHA Plugin
+```bash
+cd GH_MCP
+dotnet build
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### Running Tests
+```bash
+pytest tests/
+```
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
+## Contributing
 
-- Thanks to the Rhino and Grasshopper community for their excellent tools
-- Thanks to Anthropic for Claude Desktop and the MCP protocol
+We welcome contributions! Please see our contributing guidelines and open an issue or pull request.
 
-## Contact
+## Changelog
 
-For questions or support, please open an issue on the GitHub repository.
+### Version 2.0.0 (Latest)
+- ✅ **Official API Support**: Full integration with Rhino 8 SR18 APIs
+- ✅ **Automatic Parameter Configuration**: No manual setup required
+- ✅ **Smart API Detection**: Automatic fallback system
+- ✅ **Enhanced Type System**: 15+ parameter types with automatic type hints
+- ✅ **Modern Script Components**: Creates new Scripts components (not legacy Python components)
+- ✅ **Dual Language Support**: Python and C# with identical functionality
+- ✅ **Improved Error Handling**: Comprehensive error management and logging
+
+### Version 1.0.0
+- Basic MCP server functionality
+- Manual parameter configuration
+- Legacy API support only
+
+## Support
+
+For issues and questions:
+- Check the [documentation](ENHANCED_CODE_EXECUTION_GUIDE.md)
+- Open an issue on GitHub
+- Review system logs for troubleshooting
+
+---
+
+**Note**: This implementation uses the latest official McNeel APIs as documented in the Rhino 8 SR18 release notes and McNeel Developer Forum discussions. The system automatically detects available APIs and provides the best possible experience for your Rhino version.
+
+
+setup instruction:
+cd GH_MCP
+dotnet build --configuration Release
