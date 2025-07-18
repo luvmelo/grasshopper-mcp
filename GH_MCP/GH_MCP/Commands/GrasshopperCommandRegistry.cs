@@ -34,9 +34,6 @@ namespace GH_MCP.Commands
             // 註冊意圖命令
             RegisterIntentCommands();
             
-            // 註冊代碼執行命令
-            RegisterCodeExecutionCommands();
-            
             RhinoApp.WriteLine("GH_MCP: Command registry initialized.");
         }
 
@@ -66,20 +63,11 @@ namespace GH_MCP.Commands
             // 連接組件
             RegisterCommand("connect_components", ConnectionCommandHandler.ConnectComponents);
             
-            // 獲取連接
-            RegisterCommand("get_connections", ConnectionCommandHandler.GetConnections);
-            
             // 設置組件值
             RegisterCommand("set_component_value", ComponentCommandHandler.SetComponentValue);
             
             // 獲取組件信息
             RegisterCommand("get_component_info", ComponentCommandHandler.GetComponentInfo);
-            
-            // 搜索組件
-            RegisterCommand("search_components", ComponentCommandHandler.SearchComponents);
-            
-            // 獲取所有組件
-            RegisterCommand("get_all_components", ComponentCommandHandler.GetAllComponents);
         }
 
         /// <summary>
@@ -112,17 +100,6 @@ namespace GH_MCP.Commands
             RegisterCommand("get_available_patterns", IntentCommandHandler.GetAvailablePatterns);
             
             RhinoApp.WriteLine("GH_MCP: Intent commands registered.");
-        }
-
-        /// <summary>
-        /// 註冊代碼執行命令
-        /// </summary>
-        private static void RegisterCodeExecutionCommands()
-        {
-            // 執行代碼
-            RegisterCommand("execute_code", CodeExecutionCommandHandler.ExecuteCode);
-            
-            RhinoApp.WriteLine("GH_MCP: Code execution commands registered.");
         }
 
         /// <summary>

@@ -141,37 +141,16 @@ namespace GrasshopperMCP.Commands
                         case "numberslider":
                         case "gh_numberslider":
                             var slider = new GH_NumberSlider();
-                            slider.CreateAttributes(); // 创建属性，确保slider不会崩溃
-                            
-                            // 檢查是否有自定義範圍參數
-                            double minValue = command.Parameters.ContainsKey("min") ? 
-                                Convert.ToDouble(command.Parameters["min"]) : 0.0;
-                            double maxValue = command.Parameters.ContainsKey("max") ? 
-                                Convert.ToDouble(command.Parameters["max"]) : 10.0;
-                            double currentValue = command.Parameters.ContainsKey("value") ? 
-                                Convert.ToDouble(command.Parameters["value"]) : Math.Min(5.0, (minValue + maxValue) / 2);
-                            
-                            // 確保當前值在範圍內
-                            currentValue = Math.Max(minValue, Math.Min(maxValue, currentValue));
-                            
-                            // 正確設置slider的屬性
-                            slider.Slider.Minimum = (decimal)minValue;
-                            slider.Slider.Maximum = (decimal)maxValue;
-                            slider.Slider.DecimalPlaces = 2;
-                            slider.SetSliderValue((decimal)currentValue);
-                            
-                            RhinoApp.WriteLine($"Created Number Slider: min={minValue}, max={maxValue}, value={currentValue}");
+                            slider.SetInitCode("0.0 < 0.5 < 1.0");
                             component = slider;
                             break;
                         case "number":
                         case "num":
-                        case "param_number":
-                            component = new Param_Number();
-                            break;
                         case "integer":
                         case "int":
+                        case "param_number":
                         case "param_integer":
-                            component = new Param_Integer();
+                            component = new Param_Number();
                             break;
                         case "construct point":
                         case "constructpoint":
@@ -853,27 +832,6 @@ namespace GrasshopperMCP.Commands
                         // 添加到文檔
                         doc.AddObject(component, false);
                         
-                        // 如果是 Slider，在添加到文檔後再設置值
-                        if (component is GH_NumberSlider slider)
-                        {
-                            // 獲取參數
-                            double minValue = command.Parameters.ContainsKey("min") ? Convert.ToDouble(command.Parameters["min"]) : 0.0;
-                            double maxValue = command.Parameters.ContainsKey("max") ? Convert.ToDouble(command.Parameters["max"]) : 10.0;
-                            double currentValue = command.Parameters.ContainsKey("value") ? Convert.ToDouble(command.Parameters["value"]) : (minValue + maxValue) / 2;
-
-                            // 確保值在範圍內
-                            currentValue = Math.Max(minValue, Math.Min(maxValue, currentValue));
-
-                            // 延遲後設置，確保組件已初始化
-                            RhinoApp.InvokeOnUiThread(new Action(() => {
-                                slider.Slider.Minimum = (decimal)minValue;
-                                slider.Slider.Maximum = (decimal)maxValue;
-                                slider.SetSliderValue((decimal)currentValue);
-                                slider.ExpireSolution(true); // 強制刷新
-                                RhinoApp.WriteLine($"Slider '{slider.NickName}' value set to {currentValue}");
-                            }));
-                        }
-
                         // 刷新畫布
                         doc.NewSolution(false);
                         
@@ -908,10 +866,10 @@ namespace GrasshopperMCP.Commands
             // 如果有異常，拋出
             if (exception != null)
             {
-                return Response.CreateError($"Error adding component: {exception.Message}");
+                throw exception;
             }
-
-            return Response.Ok(new { result });
+            
+            return result;
         }
         
         /// <summary>
@@ -1031,13 +989,13 @@ namespace GrasshopperMCP.Commands
                 Thread.Sleep(10);
             }
             
-            // 如果有異常，返回錯誤響應
+            // 如果有異常，拋出
             if (exception != null)
             {
-                return Response.CreateError($"Error connecting components: {exception.Message}");
+                throw exception;
             }
             
-            return Response.Ok(new { result });
+            return result;
         }
         
         /// <summary>
@@ -1047,34 +1005,12 @@ namespace GrasshopperMCP.Commands
         /// <returns>操作結果</returns>
         public static object SetComponentValue(Command command)
         {
-            // 检查命令参数是否存在
-            if (command.Parameters == null)
-            {
-                return Response.CreateError("Command parameters are required");
-            }
-            
-            // 更安全的参数获取方式
-            string idStr = null;
-            string value = null;
-            
-            try
-            {
-                idStr = command.GetParameter<string>("id");
-                value = command.GetParameter<string>("value");
-            }
-            catch (Exception ex)
-            {
-                return Response.CreateError($"Error getting parameters: {ex.Message}");
-            }
+            string idStr = command.GetParameter<string>("id");
+            string value = command.GetParameter<string>("value");
             
             if (string.IsNullOrEmpty(idStr))
             {
-                return Response.CreateError("Component ID is required. Please provide a valid component ID.");
-            }
-            
-            if (value == null)
-            {
-                return Response.CreateError("Value parameter is required.");
+                throw new ArgumentException("Component ID is required");
             }
             
             object result = null;
@@ -1186,13 +1122,13 @@ namespace GrasshopperMCP.Commands
                 Thread.Sleep(10);
             }
             
-            // 如果有異常，返回錯誤響應
+            // 如果有異常，拋出
             if (exception != null)
             {
-                return Response.CreateError($"Error setting component value: {exception.Message}");
+                throw exception;
             }
-
-            return Response.Ok(new { result });
+            
+            return result;
         }
         
         /// <summary>
@@ -1202,15 +1138,12 @@ namespace GrasshopperMCP.Commands
         /// <returns>組件信息</returns>
         public static object GetComponentInfo(Command command)
         {
-            // Check if the ID parameter exists and is not null/empty
-            if (!command.Parameters.ContainsKey("id") || 
-                command.Parameters["id"] == null || 
-                string.IsNullOrEmpty(command.Parameters["id"].ToString()))
-            {
-                throw new ArgumentException("Component ID is required. Please provide a valid component ID.");
-            }
+            string idStr = command.GetParameter<string>("id");
             
-            string idStr = command.Parameters["id"].ToString();
+            if (string.IsNullOrEmpty(idStr))
+            {
+                throw new ArgumentException("Component ID is required");
+            }
             
             object result = null;
             Exception exception = null;
@@ -1316,8 +1249,8 @@ namespace GrasshopperMCP.Commands
             {
                 throw exception;
             }
-
-            return Response.Ok(new { result });
+            
+            return result;
         }
         
         private static IGH_DocumentObject CreateComponentByName(string name)
@@ -1332,165 +1265,6 @@ namespace GrasshopperMCP.Commands
             else
             {
                 throw new ArgumentException($"Component with name {name} not found");
-            }
-        }
-        
-        /// <summary>
-        /// 搜索組件
-        /// </summary>
-        /// <param name="command">包含搜索條件的命令</param>
-        /// <returns>匹配的組件列表</returns>
-        public static object SearchComponents(Command command)
-        {
-            string query = command.GetParameter<string>("query");
-            if (string.IsNullOrEmpty(query))
-            {
-                throw new ArgumentException("Search query is required");
-            }
-            
-            object result = null;
-            Exception exception = null;
-            
-            // 在 UI 線程上執行
-            RhinoApp.InvokeOnUiThread(new Action(() =>
-            {
-                try
-                {
-                    var components = new List<Dictionary<string, object>>();
-                    
-                    // 搜索所有可用的組件
-                    var proxies = Grasshopper.Instances.ComponentServer.ObjectProxies;
-                    
-                    foreach (var proxy in proxies)
-                    {
-                        // 檢查名稱、類別或描述是否匹配查詢
-                        if (proxy.Desc.Name.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            proxy.Desc.Category.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            proxy.Desc.SubCategory.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            proxy.Desc.Description.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            components.Add(new Dictionary<string, object>
-                            {
-                                { "name", proxy.Desc.Name },
-                                { "category", proxy.Desc.Category },
-                                { "subcategory", proxy.Desc.SubCategory },
-                                { "description", proxy.Desc.Description },
-                                { "guid", proxy.Guid.ToString() }
-                            });
-                        }
-                    }
-                    
-                    // 使用模糊匹配進行額外搜索
-                    var fuzzyMatches = FuzzyMatcher.SearchComponents(query);
-                    foreach (var match in fuzzyMatches)
-                    {
-                        // 避免重複添加
-                        if (!components.Any(c => c["name"].ToString().Equals(match, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            var proxy = proxies.FirstOrDefault(p => p.Desc.Name.Equals(match, StringComparison.OrdinalIgnoreCase));
-                            if (proxy != null)
-                            {
-                                components.Add(new Dictionary<string, object>
-                                {
-                                    { "name", proxy.Desc.Name },
-                                    { "category", proxy.Desc.Category },
-                                    { "subcategory", proxy.Desc.SubCategory },
-                                    { "description", proxy.Desc.Description },
-                                    { "guid", proxy.Guid.ToString() }
-                                });
-                            }
-                        }
-                    }
-                    
-                    result = components;
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                }
-            }));
-            
-            // 等待 UI 線程完成
-            while (result == null && exception == null)
-            {
-                Thread.Sleep(10);
-            }
-            
-            // 如果有異常，拋出
-            if (exception != null)
-            {
-                throw exception;
-            }
-
-            return Response.Ok(new { result });
-        }
-        
-        /// <summary>
-        /// 獲取所有組件
-        /// </summary>
-        /// <param name="command">命令參數</param>
-        /// <returns>所有組件的列表</returns>
-        public static object GetAllComponents(Command command)
-        {
-            try
-            {
-                var doc = Grasshopper.Instances.ActiveCanvas?.Document;
-                if (doc == null)
-                {
-                    return Response.CreateError("No active Grasshopper document");
-                }
-
-                var components = new List<object>();
-                
-                foreach (var obj in doc.Objects)
-                {
-                    if (obj is IGH_Component component)
-                    {
-                        var componentInfo = new
-                        {
-                            id = component.InstanceGuid.ToString(),
-                            type = component.Name,
-                            name = component.NickName,
-                            x = component.Attributes?.Pivot.X ?? 0,
-                            y = component.Attributes?.Pivot.Y ?? 0,
-                            description = component.Description,
-                            category = component.Category,
-                            subcategory = component.SubCategory,
-                            inputCount = component.Params?.Input?.Count ?? 0,
-                            outputCount = component.Params?.Output?.Count ?? 0,
-                            inputs = component.Params?.Input?.Select(p => new
-                            {
-                                name = p.Name,
-                                nickname = p.NickName,
-                                description = p.Description,
-                                type = p.Type.Name,
-                                optional = p.Optional,
-                                hasData = p.VolatileDataCount > 0
-                            }).ToList(),
-                            outputs = component.Params?.Output?.Select(p => new
-                            {
-                                name = p.Name,
-                                nickname = p.NickName,
-                                description = p.Description,
-                                type = p.Type.Name,
-                                hasData = p.VolatileDataCount > 0
-                            }).ToList()
-                        };
-                        
-                        components.Add(componentInfo);
-                    }
-                }
-                
-                return Response.Ok(new 
-                { 
-                    success = true, 
-                    result = components,
-                    count = components.Count
-                });
-            }
-            catch (Exception ex)
-            {
-                return Response.CreateError($"Error getting all components: {ex.Message}");
             }
         }
     }

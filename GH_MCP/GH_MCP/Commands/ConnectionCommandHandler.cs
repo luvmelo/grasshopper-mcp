@@ -229,101 +229,10 @@ namespace GH_MCP.Commands
             // 如果有異常，拋出
             if (exception != null)
             {
-                return Response.CreateError($"Error connecting components: {exception.Message}");
+                return Response.CreateError($"Error executing command 'connect_components': {exception.Message}");
             }
 
-            return Response.Ok(new { result });
-        }
-
-        /// <summary>
-        /// 獲取所有連接
-        /// </summary>
-        /// <param name="command">命令對象</param>
-        /// <returns>所有連接的列表</returns>
-        public static object GetConnections(Command command)
-        {
-            object result = null;
-            Exception exception = null;
-            
-            // 在 UI 線程上執行
-            RhinoApp.InvokeOnUiThread(new Action(() =>
-            {
-                try
-                {
-                    var doc = Grasshopper.Instances.ActiveCanvas?.Document;
-                    if (doc == null)
-                    {
-                        result = Response.CreateError("No active Grasshopper document");
-                        return;
-                    }
-                    
-                    var connections = new List<object>();
-                    
-                    // 遍歷所有組件
-                    foreach (var obj in doc.Objects)
-                    {
-                        if (obj is IGH_Component component)
-                        {
-                            // 檢查組件的所有輸入參數
-                            for (int i = 0; i < component.Params.Input.Count; i++)
-                            {
-                                var param = component.Params.Input[i];
-                                
-                                // 檢查這個參數的所有源連接
-                                foreach (var source in param.Sources)
-                                {
-                                    // 找到源組件
-                                    var sourceComponent = source.Attributes.GetTopLevel.DocObject as IGH_Component;
-                                    if (sourceComponent != null)
-                                    {
-                                        // 找到源參數的索引
-                                        int sourceParamIndex = -1;
-                                        for (int j = 0; j < sourceComponent.Params.Output.Count; j++)
-                                        {
-                                            if (sourceComponent.Params.Output[j] == source)
-                                            {
-                                                sourceParamIndex = j;
-                                                break;
-                                            }
-                                        }
-                                        
-                                        connections.Add(new
-                                        {
-                                            sourceId = sourceComponent.InstanceGuid.ToString(),
-                                            sourceParam = source.Name,
-                                            sourceParamIndex = sourceParamIndex,
-                                            targetId = component.InstanceGuid.ToString(),
-                                            targetParam = param.Name,
-                                            targetParamIndex = i
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    result = Response.Ok(connections);
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                    RhinoApp.WriteLine($"Error in GetConnections: {ex.Message}");
-                }
-            }));
-            
-            // 等待 UI 線程操作完成
-            while (result == null && exception == null)
-            {
-                Thread.Sleep(10);
-            }
-            
-            // 如果有異常，拋出
-            if (exception != null)
-            {
-                return Response.CreateError($"Error getting connections: {exception.Message}");
-            }
-
-            return Response.Ok(new { result });
+            return Response.Ok(result);
         }
 
         /// <summary>
@@ -362,79 +271,30 @@ namespace GH_MCP.Commands
                 // 按名稱查找參數
                 if (!string.IsNullOrEmpty(connection.ParameterName))
                 {
-                    RhinoApp.WriteLine($"Looking for parameter '{connection.ParameterName}' in {parameters.Count} parameters");
-                    
-                    // 輸出所有可用參數名稱用於調試
-                    foreach (var p in parameters)
-                    {
-                        RhinoApp.WriteLine($"  Available parameter: Name='{p.Name}', NickName='{p.NickName}', Type={p.GetType().Name}");
-                    }
-                    
-                    // 精確匹配 Name
+                    // 精確匹配
                     foreach (var p in parameters)
                     {
                         if (string.Equals(p.Name, connection.ParameterName, StringComparison.OrdinalIgnoreCase))
                         {
-                            RhinoApp.WriteLine($"Found exact match for Name: '{p.Name}'");
                             return p;
                         }
                     }
                     
-                    // 精確匹配 NickName
-                    foreach (var p in parameters)
-                    {
-                        if (string.Equals(p.NickName, connection.ParameterName, StringComparison.OrdinalIgnoreCase))
-                        {
-                            RhinoApp.WriteLine($"Found exact match for NickName: '{p.NickName}'");
-                            return p;
-                        }
-                    }
-                    
-                    // 模糊匹配 Name
+                    // 模糊匹配
                     foreach (var p in parameters)
                     {
                         if (p.Name.IndexOf(connection.ParameterName, StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            RhinoApp.WriteLine($"Found fuzzy match for Name: '{p.Name}' contains '{connection.ParameterName}'");
                             return p;
                         }
                     }
 
-                    // 模糊匹配 NickName
+                    // 嘗試匹配 NickName
                     foreach (var p in parameters)
                     {
-                        if (p.NickName.IndexOf(connection.ParameterName, StringComparison.OrdinalIgnoreCase) >= 0)
+                        if (string.Equals(p.NickName, connection.ParameterName, StringComparison.OrdinalIgnoreCase))
                         {
-                            RhinoApp.WriteLine($"Found fuzzy match for NickName: '{p.NickName}' contains '{connection.ParameterName}'");
                             return p;
-                        }
-                    }
-                    
-                    // 對於Scripts組件，嘗試基於常見的參數名稱映射
-                    if (component.GetType().Name.Contains("Script"))
-                    {
-                        string normalizedName = connection.ParameterName.ToLowerInvariant();
-                        
-                        // 嘗試常見的參數名稱變化
-                        string[] variations = {
-                            normalizedName,
-                            normalizedName.ToLowerInvariant(),
-                            normalizedName.ToUpperInvariant(),
-                            char.ToLowerInvariant(normalizedName[0]) + normalizedName.Substring(1),
-                            char.ToUpperInvariant(normalizedName[0]) + normalizedName.Substring(1).ToLowerInvariant()
-                        };
-                        
-                        foreach (var variation in variations)
-                        {
-                            foreach (var p in parameters)
-                            {
-                                if (string.Equals(p.Name, variation, StringComparison.OrdinalIgnoreCase) ||
-                                    string.Equals(p.NickName, variation, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    RhinoApp.WriteLine($"Found Scripts component parameter match: '{p.Name}' for variation '{variation}'");
-                                    return p;
-                                }
-                            }
                         }
                     }
                 }
