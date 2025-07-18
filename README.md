@@ -20,7 +20,7 @@ Grasshopper MCP now fully supports these official APIs, enabling complete progra
 - **Programmatic Parameter Configuration**: Automatically configure input/output parameters using official Rhino 8 SR18 APIs
 - **Dual API Support**: Uses **`Python3Component.Create()`** and **`CSharpComponent.Create()`** methods (new API) with automatic fallback to legacy methods
 - **Smart Type Hints**: Automatic type hint configuration using **`ScriptVariableParam`** and **`TypeHints.Select()`** methods
-- **Complete Automation**: No manual parameter setup required - creates fully functional Script components
+- **Automatic Parameter Configuration**: Creates fully functional Script components with automatic parameter setup (Rhino 8 SR18+) or guidance fallback (older versions)
 - **15+ Parameter Types**: Support for number, string, point, curve, brep, mesh, geometry, and more
 - **Multi-Language Support**: Both Python and C# script components
 - **Intelligent Error Handling**: Graceful fallback between API versions
@@ -247,6 +247,18 @@ The system supports 15+ parameter types with automatic type hint configuration:
 - **Claude Desktop** or compatible MCP client
 
 ## API Architecture
+
+### Script Parameter Configuration
+
+**Automatic Configuration** (Rhino 8 SR18+):
+- Full automatic parameter setup using official McNeel APIs
+- Uses `ScriptVariableParam` and `SetParametersToScript()` methods
+- Parameters are immediately available after component creation
+
+**Legacy Configuration** (Older versions):
+- Programmatic parameter creation using `RegisterInputParam()` 
+- Manual parameter configuration guidance provided
+- Requires user to verify parameter setup
 
 ### Priority System
 1. **Rhino 8 SR18 Official APIs** (Primary)

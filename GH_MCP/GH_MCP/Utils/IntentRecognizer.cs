@@ -71,26 +71,35 @@ namespace GH_MCP.Utils
             );
 
             // 計算每個意圖的匹配分數
-            var intentScores = new Dictionary<string, int>();
+            var intentScores = new Dictionary<string, (int matchCount, int priority)>();
 
             foreach (var intent in _knowledgeBase["intents"])
             {
                 string patternName = intent["pattern"].ToString();
                 var keywords = intent["keywords"].ToObject<List<string>>();
+                
+                // 獲取優先級（如果存在）
+                int priority = intent["priority"]?.ToObject<int>() ?? keywords.Count;
 
                 // 計算匹配的關鍵詞數量
                 int matchCount = words.Count(word => keywords.Contains(word));
 
                 if (matchCount > 0)
                 {
-                    intentScores[patternName] = matchCount;
+                    intentScores[patternName] = (matchCount, priority);
                 }
             }
 
-            // 返回得分最高的意圖
+            // 返回得分最高的意圖，優先考慮匹配數量，然後考慮優先級
             if (intentScores.Count > 0)
             {
-                return intentScores.OrderByDescending(pair => pair.Value).First().Key;
+                var bestIntent = intentScores
+                    .OrderByDescending(pair => pair.Value.matchCount)
+                    .ThenByDescending(pair => pair.Value.priority)
+                    .First();
+                
+                RhinoApp.WriteLine($"Intent recognition: '{description}' -> '{bestIntent.Key}' (matches: {bestIntent.Value.matchCount}, priority: {bestIntent.Value.priority})");
+                return bestIntent.Key;
             }
 
             return null;

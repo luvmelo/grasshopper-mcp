@@ -289,6 +289,498 @@ namespace GrasshopperMCP.Commands
                         case "offset":
                             component = CreateComponentByName("Offset Curve");
                             break;
+                            
+                        // 新增曲线组件
+                        case "arc":
+                            component = CreateComponentByName("Arc");
+                            break;
+                        case "polyline":
+                            component = CreateComponentByName("Polyline");
+                            break;
+                        case "interpolate":
+                        case "interpolatecurve":
+                            component = CreateComponentByName("Interpolate");
+                            break;
+                        case "nurbscurve":
+                        case "nurbs":
+                            component = CreateComponentByName("NURBS Curve");
+                            break;
+                        case "extendcurve":
+                        case "extend":
+                            component = CreateComponentByName("Extend Curve");
+                            break;
+                        case "fillet":
+                            component = CreateComponentByName("Fillet");
+                            break;
+                        case "explode":
+                            component = CreateComponentByName("Explode");
+                            break;
+                        case "closestpoint":
+                        case "closest":
+                            component = CreateComponentByName("Closest Point");
+                            break;
+                        case "curvature":
+                            component = CreateComponentByName("Curvature");
+                            break;
+                            
+                        // 新增表面组件
+                        case "planesurface":
+                        case "plane surface":
+                            component = CreateComponentByName("Plane Surface");
+                            break;
+                        case "surfacefrompoints":
+                        case "surface from points":
+                            component = CreateComponentByName("Surface from Points");
+                            break;
+                        case "sweep1":
+                        case "sweep 1":
+                            component = CreateComponentByName("Sweep 1");
+                            break;
+                        case "sweep2":
+                        case "sweep 2":
+                            component = CreateComponentByName("Sweep 2");
+                            break;
+                        case "revolve":
+                            component = CreateComponentByName("Revolve");
+                            break;
+                        case "patch":
+                            component = CreateComponentByName("Patch");
+                            break;
+                        case "offsetsurface":
+                        case "offset surface":
+                            component = CreateComponentByName("Offset Surface");
+                            break;
+                        case "evaluatesurface":
+                        case "eval surface":
+                            component = CreateComponentByName("Evaluate Surface");
+                            break;
+                        case "surfaceclosestpoint":
+                        case "surface closest point":
+                            component = CreateComponentByName("Surface Closest Point");
+                            break;
+                        case "isotrim":
+                            component = CreateComponentByName("Isotrim");
+                            break;
+                            
+                        // 新增网格组件
+                        case "mesh":
+                            component = CreateComponentByName("Mesh");
+                            break;
+                        case "meshsphere":
+                        case "mesh sphere":
+                            component = CreateComponentByName("Mesh Sphere");
+                            break;
+                        case "meshbox":
+                        case "mesh box":
+                            component = CreateComponentByName("Mesh Box");
+                            break;
+                        case "meshplane":
+                        case "mesh plane":
+                            component = CreateComponentByName("Mesh Plane");
+                            break;
+                        case "constructmesh":
+                        case "construct mesh":
+                            component = CreateComponentByName("Construct Mesh");
+                            break;
+                        case "deconstructmesh":
+                        case "deconstruct mesh":
+                            component = CreateComponentByName("Deconstruct Mesh");
+                            break;
+                        case "meshjoin":
+                        case "mesh join":
+                            component = CreateComponentByName("Mesh Join");
+                            break;
+                        case "smoothmesh":
+                        case "smooth mesh":
+                            component = CreateComponentByName("Smooth Mesh");
+                            break;
+                        case "meshoffset":
+                        case "mesh offset":
+                            component = CreateComponentByName("Mesh Offset");
+                            break;
+                        case "mesharea":
+                        case "mesh area":
+                            component = CreateComponentByName("Mesh Area");
+                            break;
+                        case "delaunaytriangulation":
+                        case "delaunay":
+                            component = CreateComponentByName("Delaunay Triangulation");
+                            break;
+                        case "convexhull":
+                        case "convex hull":
+                            component = CreateComponentByName("Convex Hull");
+                            break;
+                            
+                        // 新增布尔操作组件
+                        case "booleanunion":
+                        case "boolean union":
+                        case "union":
+                            component = CreateComponentByName("Boolean Union");
+                            break;
+                        case "booleandifference":
+                        case "boolean difference":
+                        case "difference":
+                            component = CreateComponentByName("Boolean Difference");
+                            break;
+                        case "booleanintersection":
+                        case "boolean intersection":
+                        case "intersection":
+                            component = CreateComponentByName("Boolean Intersection");
+                            break;
+                        case "curvecurve":
+                        case "curve | curve":
+                            component = CreateComponentByName("Curve | Curve");
+                            break;
+                        case "brepline":
+                        case "brep | line":
+                            component = CreateComponentByName("Brep | Line");
+                            break;
+                            
+                        // 新增变换组件
+                        case "mirror":
+                            component = CreateComponentByName("Mirror");
+                            break;
+                        case "orient":
+                            component = CreateComponentByName("Orient");
+                            break;
+                        case "lineararray":
+                        case "linear array":
+                            component = CreateComponentByName("Linear Array");
+                            break;
+                        case "polararray":
+                        case "polar array":
+                            component = CreateComponentByName("Polar Array");
+                            break;
+                        case "rectangulararray":
+                        case "rectangular array":
+                            component = CreateComponentByName("Rectangular Array");
+                            break;
+                            
+                        // 新增数学组件
+                        case "sine":
+                        case "sin":
+                            component = CreateComponentByName("Sine");
+                            break;
+                        case "cosine":
+                        case "cos":
+                            component = CreateComponentByName("Cosine");
+                            break;
+                        case "tangent":
+                        case "tan":
+                            component = CreateComponentByName("Tangent");
+                            break;
+                        case "power":
+                        case "pow":
+                            component = CreateComponentByName("Power");
+                            break;
+                        case "squareroot":
+                        case "sqrt":
+                            component = CreateComponentByName("Square Root");
+                            break;
+                        case "logarithm":
+                        case "log":
+                            component = CreateComponentByName("Logarithm");
+                            break;
+                        case "absolute":
+                        case "abs":
+                            component = CreateComponentByName("Absolute");
+                            break;
+                        case "round":
+                            component = CreateComponentByName("Round");
+                            break;
+                        case "floor":
+                            component = CreateComponentByName("Floor");
+                            break;
+                        case "ceiling":
+                        case "ceil":
+                            component = CreateComponentByName("Ceiling");
+                            break;
+                        case "random":
+                            component = CreateComponentByName("Random");
+                            break;
+                        case "modulus":
+                        case "mod":
+                            component = CreateComponentByName("Modulus");
+                            break;
+                        case "domain":
+                            component = CreateComponentByName("Domain");
+                            break;
+                        case "bounds":
+                            component = CreateComponentByName("Bounds");
+                            break;
+                        case "remapnumbers":
+                        case "remap":
+                            component = CreateComponentByName("Remap Numbers");
+                            break;
+                            
+                        // 新增列表/集合组件
+                        case "splitlist":
+                        case "split list":
+                            component = CreateComponentByName("Split List");
+                            break;
+                        case "reverselist":
+                        case "reverse":
+                            component = CreateComponentByName("Reverse List");
+                            break;
+                        case "sortlist":
+                        case "sort":
+                            component = CreateComponentByName("Sort List");
+                            break;
+                        case "shufflelist":
+                        case "shuffle":
+                            component = CreateComponentByName("Shuffle List");
+                            break;
+                        case "cullpattern":
+                        case "cull":
+                            component = CreateComponentByName("Cull Pattern");
+                            break;
+                        case "dispatch":
+                            component = CreateComponentByName("Dispatch");
+                            break;
+                        case "merge":
+                            component = CreateComponentByName("Merge");
+                            break;
+                        case "weave":
+                            component = CreateComponentByName("Weave");
+                            break;
+                        case "entwine":
+                            component = CreateComponentByName("Entwine");
+                            break;
+                        case "flattentree":
+                        case "flatten":
+                            component = CreateComponentByName("Flatten Tree");
+                            break;
+                        case "grafttree":
+                        case "graft":
+                            component = CreateComponentByName("Graft Tree");
+                            break;
+                        case "simplifytree":
+                        case "simplify":
+                            component = CreateComponentByName("Simplify Tree");
+                            break;
+                            
+                        // 新增向量组件
+                        case "unitx":
+                        case "unit x":
+                            component = CreateComponentByName("Unit X");
+                            break;
+                        case "unity":
+                        case "unit y":
+                            component = CreateComponentByName("Unit Y");
+                            break;
+                        case "unitz":
+                        case "unit z":
+                            component = CreateComponentByName("Unit Z");
+                            break;
+                        case "vectorxyz":
+                        case "vector xyz":
+                            component = CreateComponentByName("Vector XYZ");
+                            break;
+                        case "vectorlength":
+                        case "vector length":
+                            component = CreateComponentByName("Vector Length");
+                            break;
+                        case "unitize":
+                            component = CreateComponentByName("Unitize");
+                            break;
+                        case "dotproduct":
+                        case "dot":
+                            component = CreateComponentByName("Dot Product");
+                            break;
+                        case "crossproduct":
+                        case "cross":
+                            component = CreateComponentByName("Cross Product");
+                            break;
+                        case "vectorangle":
+                        case "angle":
+                            component = CreateComponentByName("Vector Angle");
+                            break;
+                        case "amplitude":
+                            component = CreateComponentByName("Amplitude");
+                            break;
+                        case "deconstructpoint":
+                        case "deconstruct point":
+                            component = CreateComponentByName("Deconstruct Point");
+                            break;
+                        case "populate2d":
+                        case "populate 2d":
+                            component = CreateComponentByName("Populate 2D");
+                            break;
+                        case "hexgrid":
+                        case "hex grid":
+                            component = CreateComponentByName("Hex Grid");
+                            break;
+                        case "triangulargrid":
+                        case "triangular grid":
+                            component = CreateComponentByName("Triangular Grid");
+                            break;
+                            
+                        // 新增显示组件
+                        case "text":
+                            component = CreateComponentByName("Text");
+                            break;
+                        case "texttag":
+                        case "text tag":
+                            component = CreateComponentByName("Text Tag");
+                            break;
+                        case "colourrgb":
+                        case "colour rgb":
+                        case "color rgb":
+                            component = CreateComponentByName("Colour RGB");
+                            break;
+                        case "colourhsl":
+                        case "colour hsl":
+                        case "color hsl":
+                            component = CreateComponentByName("Colour HSL");
+                            break;
+                        case "custompreview":
+                        case "custom preview":
+                            component = CreateComponentByName("Custom Preview");
+                            break;
+                        case "gradient":
+                            component = CreateComponentByName("Gradient");
+                            break;
+                        case "valuelist":
+                        case "value list":
+                            var valueList = new GH_ValueList();
+                            valueList.CreateAttributes();
+                            
+                            // 检查是否有自定义值参数
+                            if (command.Parameters.ContainsKey("values"))
+                            {
+                                var values = command.Parameters["values"].ToString().Split(',');
+                                valueList.ListItems.Clear();
+                                for (int i = 0; i < values.Length; i++)
+                                {
+                                    valueList.ListItems.Add(new Grasshopper.Kernel.Special.GH_ValueListItem(values[i].Trim(), $"\"{values[i].Trim()}\""));
+                                }
+                            }
+                            
+                            component = valueList;
+                            break;
+                        case "mdslider":
+                        case "md slider":
+                            var mdSlider = new GH_NumberSlider(); // 简化实现，实际需要自定义组件
+                            mdSlider.CreateAttributes();
+                            component = mdSlider;
+                            break;
+                        case "button":
+                            var button = new GH_BooleanToggle(); // 简化实现为toggle
+                            button.CreateAttributes();
+                            component = button;
+                            break;
+                            
+                        // SubD Components
+                        case "subd from mesh":
+                        case "subdfrommesh":
+                            component = CreateComponentByName("SubD From Mesh");
+                            break;
+                        case "subd control polygon":
+                        case "subdcontrolpolygon":
+                            component = CreateComponentByName("SubD Control Polygon");
+                            break;
+                        case "subd edge tags":
+                        case "subdedgetags":
+                            component = CreateComponentByName("SubD Edge Tags");
+                            break;
+                        case "subd subdivide":
+                        case "subdsubdivide":
+                            component = CreateComponentByName("SubD Subdivide");
+                            break;
+                            
+                        // Util Components
+                        case "timer":
+                        case "trigger":
+                            component = CreateComponentByName("Trigger");
+                            break;
+                        case "data dam":
+                        case "datadam":
+                            component = CreateComponentByName("Data Dam");
+                            break;
+                        case "relay":
+                            component = CreateComponentByName("Relay");
+                            break;
+                        case "stream filter":
+                        case "streamfilter":
+                            component = CreateComponentByName("Stream Filter");
+                            break;
+                        case "data recorder":
+                        case "datarecorder":
+                            component = CreateComponentByName("Data Recorder");
+                            break;
+                            
+                        // Analysis Components (additional)
+                        case "surface curvature":
+                        case "surfacecurvature":
+                            component = CreateComponentByName("Surface Curvature");
+                            break;
+                        case "curve domain":
+                        case "curvedomain":
+                            component = CreateComponentByName("Curve Domain");
+                            break;
+                        case "surface domain":
+                        case "surfacedomain":
+                            component = CreateComponentByName("Surface Domain");
+                            break;
+                        case "surface area":
+                        case "surfacearea":
+                            component = CreateComponentByName("Surface Area");
+                            break;
+                        case "mesh edges":
+                        case "meshedges":
+                            component = CreateComponentByName("Mesh Edges");
+                            break;
+                            
+                        // Script Components
+                        case "python script":
+                        case "pythonscript":
+                        case "python":
+                        case "ghpython":
+                            component = CreateComponentByName("GhPython Script");
+                            break;
+                        case "c# script":
+                        case "csharp script":
+                        case "csharpscript":
+                        case "c#":
+                        case "csharp":
+                            component = CreateComponentByName("C# Script");
+                            break;
+                            
+                        // Additional Mesh Components
+                        case "voronoi 3d":
+                        case "voronoi3d":
+                            component = CreateComponentByName("Voronoi 3D");
+                            break;
+                        case "mesh split":
+                        case "meshsplit":
+                            component = CreateComponentByName("Mesh Split");
+                            break;
+                            
+                        // Additional Vector Components
+                        case "populate 3d":
+                        case "populate3d":
+                            component = CreateComponentByName("Populate 3D");
+                            break;
+                        case "populate geometry":
+                        case "populategeometry":
+                            component = CreateComponentByName("Populate Geometry");
+                            break;
+                            
+                        // Additional Surface Components
+                        case "isocurve":
+                        case "iso curve":
+                            component = CreateComponentByName("Isocurve");
+                            break;
+                        case "surface split":
+                        case "surfacesplit":
+                            component = CreateComponentByName("Surface Split");
+                            break;
+                            
+                        // Additional Intersect Components
+                        case "contour":
+                            component = CreateComponentByName("Contour");
+                            break;
+                            
                         default:
                             // 嘗試通過 Guid 查找組件
                             Guid componentGuid;
